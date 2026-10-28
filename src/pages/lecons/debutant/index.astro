@@ -1,0 +1,167 @@
+---
+import Base from "../../../layouts/Base.astro";
+const base = import.meta.env.BASE_URL;
+---
+<Base title="Nexora — Débutant">
+  <span class="commentaire">débutant</span>
+  <h1>Afficher et ranger des valeurs</h1>
+  <p class="lede">Quatre petites notions, chacune avec son exercice. Pas de pression : tu peux te tromper, réessayer, et avancer à ton rythme.</p>
+
+  <!-- Unité 1 -->
+  <div class="unite" data-unite="u1">
+    <span class="commentaire">1 · afficher un texte</span>
+    <h3>print() affiche quelque chose</h3>
+    <p class="explication">
+      La fonction <code>print()</code> affiche ce qu'on met entre les parenthèses. Si c'est du
+      texte, il faut l'entourer de guillemets.
+    </p>
+    <div class="terminal" style="margin-bottom: 1.25rem;">
+      <div class="terminal-barre"><span>python</span></div>
+      <div class="terminal-corps">
+        <div class="terminal-ligne"><span class="num">1</span><span>print("Bonjour")</span></div>
+      </div>
+    </div>
+    <p class="consigne">Que va afficher ce programme ?</p>
+    <div class="terminal" style="margin-bottom: 1.1rem;">
+      <div class="terminal-barre"><span>python</span></div>
+      <div class="terminal-corps">
+        <div class="terminal-ligne"><span class="num">1</span><span>print("Salut Nexora")</span></div>
+      </div>
+    </div>
+    <div class="options" data-qcm>
+      <button class="option" data-ok>Salut Nexora</button>
+      <button class="option">"Salut Nexora"</button>
+      <button class="option">Une erreur</button>
+    </div>
+  </div>
+
+  <!-- Unité 2 -->
+  <div class="unite" data-unite="u2">
+    <span class="commentaire">2 · une variable, une boîte</span>
+    <h3>Ranger une valeur pour la réutiliser</h3>
+    <p class="explication">
+      On range une valeur dans une variable avec le signe <code>=</code>. On peut ensuite la
+      réutiliser, y compris dans un <code>print()</code>.
+    </p>
+    <div class="terminal" style="margin-bottom: 1.25rem;">
+      <div class="terminal-barre"><span>python</span></div>
+      <div class="terminal-corps">
+        <div class="terminal-ligne"><span class="num">1</span><span>prenom = "Léa"</span></div>
+        <div class="terminal-ligne"><span class="num">2</span><span>print("Bonjour", prenom)</span></div>
+      </div>
+    </div>
+    <p class="consigne">Complète la ligne pour que le programme affiche : Bonjour Nexora</p>
+    <div class="terminal" style="margin-bottom: 1.1rem;">
+      <div class="terminal-barre"><span>python</span></div>
+      <div class="terminal-corps">
+        <div class="terminal-ligne"><span class="num">1</span><span>print(____________)</span></div>
+      </div>
+    </div>
+    <input class="champ-reponse" data-input type="text" placeholder='ce qui va entre les parenthèses, ex : "mon texte"' autocomplete="off" />
+    <div class="actions"><button class="btn-ghost" data-verifier type="button">Vérifier</button></div>
+    <p class="retour" data-retour></p>
+  </div>
+
+  <!-- Unité 3 -->
+  <div class="unite" data-unite="u3">
+    <span class="commentaire">3 · plusieurs valeurs dans un print</span>
+    <h3>print() peut afficher plusieurs choses à la fois</h3>
+    <p class="explication">
+      Avec une virgule, <code>print()</code> affiche plusieurs éléments à la suite, séparés par
+      un espace.
+    </p>
+    <p class="consigne">Que va afficher ce programme ?</p>
+    <div class="terminal" style="margin-bottom: 1.1rem;">
+      <div class="terminal-barre"><span>python</span></div>
+      <div class="terminal-corps">
+        <div class="terminal-ligne"><span class="num">1</span><span>age = 12</span></div>
+        <div class="terminal-ligne"><span class="num">2</span><span>print("J'ai", age, "ans")</span></div>
+      </div>
+    </div>
+    <div class="options" data-qcm>
+      <button class="option">age ans</button>
+      <button class="option" data-ok>J'ai 12 ans</button>
+      <button class="option">J'ai age ans</button>
+      <button class="option">Une erreur</button>
+    </div>
+  </div>
+
+  <!-- Unité 4 -->
+  <div class="unite" data-unite="u4">
+    <span class="commentaire">4 · calculer avec des variables</span>
+    <h3>Les variables peuvent contenir des nombres</h3>
+    <p class="explication">
+      Avec des nombres, les opérateurs habituels fonctionnent : <code>+</code>, <code>-</code>,
+      <code>*</code>, <code>/</code>. Le résultat peut être rangé dans une nouvelle variable.
+    </p>
+    <div class="terminal" style="margin-bottom: 1.25rem;">
+      <div class="terminal-barre"><span>python</span></div>
+      <div class="terminal-corps">
+        <div class="terminal-ligne"><span class="num">1</span><span>a = 2</span></div>
+        <div class="terminal-ligne"><span class="num">2</span><span>b = 5</span></div>
+        <div class="terminal-ligne"><span class="num">3</span><span>produit = a * b</span></div>
+      </div>
+    </div>
+    <p class="consigne">Écris une ligne qui range la somme de 3 et 4 dans une variable appelée <code>total</code>.</p>
+    <input class="champ-reponse" data-input type="text" placeholder="total = ..." autocomplete="off" />
+    <div class="actions"><button class="btn-ghost" data-verifier type="button">Vérifier</button></div>
+    <p class="retour" data-retour></p>
+  </div>
+
+  <div class="actions" style="margin-top: 2.5rem;">
+    <a class="btn" href={`${base}lecons/`}>Retour aux niveaux</a>
+  </div>
+</Base>
+
+<script>
+  function normaliser(s: string) {
+    return s.trim().replace(/\s+/g, " ").replace(/'/g, '"');
+  }
+
+  // QCM (unités 1 et 3) : un seul bouton correct, repéré par data-ok
+  document.querySelectorAll<HTMLElement>("[data-qcm]").forEach((groupe) => {
+    const boutons = groupe.querySelectorAll<HTMLButtonElement>(".option");
+    boutons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        boutons.forEach((b) => (b.disabled = true));
+        if (btn.hasAttribute("data-ok")) {
+          btn.classList.add("bonne");
+        } else {
+          btn.classList.add("mauvaise");
+          boutons.forEach((b) => { if (b.hasAttribute("data-ok")) b.classList.add("bonne"); });
+        }
+      });
+    });
+  });
+
+  // Unité 2 : compléter
+  const u2 = document.querySelector('[data-unite="u2"]')!;
+  u2.querySelector("[data-verifier]")!.addEventListener("click", () => {
+    const input = u2.querySelector("[data-input]") as HTMLInputElement;
+    const retour = u2.querySelector("[data-retour]") as HTMLElement;
+    const val = normaliser(input.value);
+    if (val === '"Bonjour Nexora"') {
+      retour.textContent = "C'est exact.";
+      retour.className = "retour ok";
+    } else {
+      retour.textContent = 'Pas tout à fait : il faut le texte exact entre guillemets, par exemple "Bonjour Nexora".';
+      retour.className = "retour ko";
+    }
+  });
+
+  // Unité 4 : écrire une ligne
+  const u4 = document.querySelector('[data-unite="u4"]')!;
+  const u4Valide = /^total\s*=\s*(3\s*\+\s*4|7)$/;
+  u4.querySelector("[data-verifier]")!.addEventListener("click", () => {
+    const input = u4.querySelector("[data-input]") as HTMLInputElement;
+    const retour = u4.querySelector("[data-retour]") as HTMLElement;
+    const val = normaliser(input.value);
+    if (u4Valide.test(val)) {
+      retour.textContent = "Exactement ça.";
+      retour.className = "retour ok";
+    } else {
+      retour.textContent = "Essaie encore : le nom de la variable, le signe =, puis le calcul ou le résultat.";
+      retour.className = "retour ko";
+    }
+  });
+</script>

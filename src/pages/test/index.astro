@@ -4,7 +4,7 @@ import Base from "../../layouts/Base.astro";
 <Base title="Nexora — Test de positionnement">
   <span class="commentaire">étape 1</span>
   <h1>Où en es-tu ?</h1>
-  <p class="lede">Quelques questions pour trouver ton point de départ. Rien à préparer, réponds du mieux que tu peux.</p>
+  <p class="lede">Quelques questions pour trouver ton point de départ. Dès qu'une réponse te résiste, on s'arrête là : pas besoin d'aller plus loin pour aujourd'hui.</p>
 
   <div class="carte" id="quiz-card">
     <div class="progression" id="quiz-progress"></div>
@@ -20,71 +20,90 @@ import Base from "../../layouts/Base.astro";
     code?: string;
     options: string[];
     bonne: number;
+    explication: string;
   }
 
-  const NIVEAUX: { id: Niveau; label: string; questions: Question[] }[] = [
+  interface Palier {
+    id: Niveau;
+    label: string;
+    intro: string;
+    questions: Question[];
+  }
+
+  const NIVEAUX: Palier[] = [
     {
       id: "debutant",
       label: "Débutant",
+      intro: "On commence simple : afficher du texte et ranger des valeurs.",
       questions: [
         {
           enonce: "Que va afficher ce programme ?",
           code: 'print("Bonjour")',
           options: ["Bonjour", '"Bonjour"', "Une erreur", "Rien"],
           bonne: 0,
+          explication: "print() affiche le contenu sans les guillemets : ils servent juste à délimiter le texte dans le code.",
         },
         {
           enonce: "Après ces deux lignes, que vaut x ?",
           code: "x = 3\nx = x + 2",
           options: ["3", "2", "5", "Une erreur"],
           bonne: 2,
+          explication: "La deuxième ligne relit la valeur actuelle de x (3), lui ajoute 2, puis range le résultat dans x.",
         },
       ],
     },
     {
       id: "intermediaire",
       label: "Intermédiaire",
+      intro: "On monte d'un cran : des décisions et des répétitions.",
       questions: [
         {
           enonce: "Que va afficher ce programme ?",
           code: "for i in range(3):\n    print(i)",
           options: ["0 1 2", "1 2 3", "3", "0 1 2 3"],
           bonne: 0,
+          explication: "range(3) parcourt 0, 1 et 2 : Python commence à compter à partir de 0.",
         },
         {
           enonce: "Que va afficher ce programme ?",
           code: 'x = 7\nif x > 5:\n    print("grand")\nelse:\n    print("petit")',
           options: ["grand", "petit", "Une erreur", "Rien"],
           bonne: 0,
+          explication: "7 est supérieur à 5, donc la condition du if est vraie : seul le bloc du if s'exécute.",
         },
       ],
     },
     {
       id: "confirme",
       label: "Confirmé",
+      intro: "Des briques plus solides : fonctions et structures de données.",
       questions: [
         {
-          enonce: "Que renvoie carre(4) ?",
+          enonce: "Que renvoie l'appel carre(4) ?",
           code: "def carre(n):\n    return n * n",
           options: ["8", "16", "4", "Une erreur"],
           bonne: 1,
+          explication: "La fonction multiplie n par lui-même : 4 × 4 = 16.",
         },
         {
           enonce: "Que va afficher ce programme ?",
           code: 'fruits = ["pomme", "poire", "kiwi"]\nprint(fruits[1])',
           options: ["pomme", "poire", "kiwi", "Une erreur"],
           bonne: 1,
+          explication: "Dans une liste, le premier élément est à l'indice 0 : l'indice 1 pointe donc sur le deuxième, poire.",
         },
       ],
     },
     {
       id: "expert",
       label: "Expert",
+      intro: "Les notions qui préparent à construire un vrai projet.",
       questions: [
         {
           enonce: "Quel mot-clé permet de capturer une exception en Python ?",
           options: ["catch", "except", "rescue", "error"],
           bonne: 1,
+          explication: "Python utilise try / except, contrairement à d'autres langages qui utilisent try / catch.",
         },
         {
           enonce: "Que fait la ligne import math ?",
@@ -95,6 +114,7 @@ import Base from "../../layouts/Base.astro";
             "Elle affiche la documentation de Python",
           ],
           bonne: 0,
+          explication: "import rend accessibles les fonctions d'un module, ici des fonctions mathématiques comme sqrt ou pi.",
         },
       ],
     },
@@ -106,10 +126,12 @@ import Base from "../../layouts/Base.astro";
 
   type Step =
     | { kind: "gate" }
+    | { kind: "intro"; niveauIndex: number }
     | { kind: "question"; niveauIndex: number; questionIndex: number };
 
   const steps: Step[] = [{ kind: "gate" }];
   for (let n = 0; n < NIVEAUX.length; n++) {
+    steps.push({ kind: "intro", niveauIndex: n });
     for (let q = 0; q < NIVEAUX[n].questions.length; q++) {
       steps.push({ kind: "question", niveauIndex: n, questionIndex: q });
     }
@@ -145,6 +167,12 @@ import Base from "../../layouts/Base.astro";
     `;
   }
 
+  function avancer() {
+    current++;
+    renderProgress();
+    renderStep();
+  }
+
   function finirAu(niveau: Niveau) {
     niveauAtteint = niveau;
     localStorage.setItem("nexora_niveau", niveau);
@@ -158,8 +186,8 @@ import Base from "../../layouts/Base.astro";
       <div class="resultat">
         <span class="commentaire">résultat</span>
         <h2>Ton niveau de départ : <span class="niveau-mot">${label}</span></h2>
-        <p style="color: var(--ink-dim);">On a préparé des leçons courtes adaptées à ce niveau. Tu pourras toujours en changer plus tard.</p>
-        <div class="actions"><a class="btn" href="${base}lecons/">Voir mes leçons</a></div>
+        <p style="color: var(--ink-dim);">On a préparé des exercices adaptés à ce niveau. Tu pourras toujours en changer plus tard.</p>
+        <div class="actions"><a class="btn" href="${base}lecons/">Voir mes exercices</a></div>
       </div>
     `;
   }
@@ -177,12 +205,21 @@ import Base from "../../layouts/Base.astro";
         if (btn.dataset.answer === "non") {
           finirAu("debutant");
         } else {
-          current++;
-          renderProgress();
-          renderStep();
+          avancer();
         }
       });
     });
+  }
+
+  function renderIntro(niveauIndex: number) {
+    const niveau = NIVEAUX[niveauIndex];
+    body.innerHTML = `
+      <span class="commentaire">niveau ${niveauIndex + 1} sur ${NIVEAUX.length}</span>
+      <h2 style="margin-top: 0.2rem;">${niveau.label}</h2>
+      <p style="color: var(--ink-dim); max-width: 50ch;">${niveau.intro}</p>
+      <div class="actions"><button class="btn" id="intro-continuer" type="button">Je me lance</button></div>
+    `;
+    document.getElementById("intro-continuer")!.addEventListener("click", avancer);
   }
 
   function renderQuestion(niveauIndex: number, questionIndex: number) {
@@ -190,7 +227,7 @@ import Base from "../../layouts/Base.astro";
     const q = niveau.questions[questionIndex];
 
     body.innerHTML = `
-      <span class="commentaire">${niveau.label.toLowerCase()}</span>
+      <span class="commentaire">${niveau.label.toLowerCase()} · question ${questionIndex + 1} sur ${niveau.questions.length}</span>
       <p class="question">${q.enonce}</p>
       ${q.code ? codeBlockHTML(q.code) : ""}
       <div class="options">
@@ -198,6 +235,7 @@ import Base from "../../layouts/Base.astro";
           .map((opt, i) => `<button class="option" data-index="${i}">${opt}</button>`)
           .join("")}
       </div>
+      <div id="suite"></div>
     `;
 
     const buttons = body.querySelectorAll<HTMLButtonElement>(".option");
@@ -213,26 +251,31 @@ import Base from "../../layouts/Base.astro";
           buttons[q.bonne].classList.add("bonne");
         }
 
-        setTimeout(() => {
+        const correct = choisi === q.bonne;
+        const suite = document.getElementById("suite")!;
+        suite.innerHTML = `
+          <p class="retour ${correct ? "ok" : "ko"}" style="margin-top: 1.1rem;">
+            ${correct ? "Bonne réponse. " : "Pas cette fois. "}${q.explication}
+          </p>
+          <div class="actions"><button class="btn" id="question-continuer" type="button">Continuer</button></div>
+        `;
+
+        document.getElementById("question-continuer")!.addEventListener("click", () => {
           const dernierQuestionDuNiveau = questionIndex === niveau.questions.length - 1;
 
-          if (choisi !== q.bonne) {
+          if (!correct) {
             const niveauFinal = niveauIndex === 0 ? "debutant" : NIVEAUX[niveauIndex - 1].id;
             finirAu(niveauFinal);
             return;
           }
 
-          if (dernierQuestionDuNiveau) {
-            if (niveauIndex === NIVEAUX.length - 1) {
-              finirAu(niveau.id);
-              return;
-            }
+          if (dernierQuestionDuNiveau && niveauIndex === NIVEAUX.length - 1) {
+            finirAu(niveau.id);
+            return;
           }
 
-          current++;
-          renderProgress();
-          renderStep();
-        }, 450);
+          avancer();
+        });
       });
     });
   }
@@ -244,6 +287,7 @@ import Base from "../../layouts/Base.astro";
       return;
     }
     if (step.kind === "gate") renderGate();
+    else if (step.kind === "intro") renderIntro(step.niveauIndex);
     else renderQuestion(step.niveauIndex, step.questionIndex);
   }
 

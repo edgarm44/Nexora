@@ -3,30 +3,32 @@ import Base from "../../layouts/Base.astro";
 const base = import.meta.env.BASE_URL;
 
 const niveaux = [
-  { id: "debutant", num: "01", nom: "Débutant", desc: "Afficher un message, utiliser des variables.", href: `${base}lecons/debutant/variables/`, pret: true },
-  { id: "intermediaire", num: "02", nom: "Intermédiaire", desc: "Conditions, boucles, logique de base.", href: null, pret: false },
-  { id: "confirme", num: "03", nom: "Confirmé", desc: "Fonctions, listes, dictionnaires, fichiers.", href: null, pret: false },
-  { id: "expert", num: "04", nom: "Expert", desc: "Classes, exceptions, modules, puis le web statique.", href: null, pret: false },
+  { id: "debutant", glyphe: ">", nom: "Débutant", desc: "Afficher un message, utiliser des variables.", href: `${base}lecons/debutant/`, pret: true },
+  { id: "intermediaire", glyphe: ">_", nom: "Intermédiaire", desc: "Conditions, boucles, logique de base.", href: null, pret: false },
+  { id: "confirme", glyphe: "{ }", nom: "Confirmé", desc: "Fonctions, listes, dictionnaires, fichiers.", href: null, pret: false },
+  { id: "expert", glyphe: "#!", nom: "Expert", desc: "Classes, exceptions, modules, puis le web statique.", href: null, pret: false },
 ];
 ---
-<Base title="Nexora — Leçons">
+<Base title="Nexora — Exercices">
   <span class="commentaire">parcours</span>
-  <h1>Les leçons</h1>
-  <p class="lede">Des séances de 5 à 10 minutes, du premier print() jusqu'au site publié. Quatre niveaux, dans l'ordre.</p>
+  <h1>Les exercices</h1>
+  <p class="lede">Pas de longs cours à lire : chaque notion tient en quelques phrases, suivies d'un exercice. Quatre niveaux, dans l'ordre.</p>
 
   <div class="grille-niveaux" id="niveaux">
     {niveaux.map((n) => (
       n.pret ? (
         <a class="carte-niveau" data-niveau={n.id} href={n.href}>
-          <span class="num-niveau">{n.num}</span>
+          <span class="glyphe">{n.glyphe}</span>
           <h3>{n.nom}</h3>
           <p>{n.desc}</p>
+          <span class="suite">Commencer</span>
         </a>
       ) : (
-        <div class="carte-niveau" data-niveau={n.id} style="opacity: 0.6;">
-          <span class="num-niveau">{n.num}</span>
+        <div class="carte-niveau verrouille" data-niveau={n.id}>
+          <span class="glyphe">{n.glyphe}</span>
           <h3>{n.nom}</h3>
-          <p>{n.desc} — bientôt.</p>
+          <p>{n.desc}</p>
+          <span class="suite">Bientôt</span>
         </div>
       )
     ))}
