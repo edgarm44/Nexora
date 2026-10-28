@@ -28,6 +28,7 @@ import Base from "../../../layouts/Base.astro";
       type: "qcm",
       options: ["True", "False", "12", "Une erreur"],
       bonneOption: 1,
+      explicationReponse: "age vaut 12, pas 13 : la comparaison age == 13 est donc fausse, et Python affiche False.",
     },
     {
       id: "u2",
@@ -40,6 +41,7 @@ import Base from "../../../layouts/Base.astro";
       type: "qcm",
       options: ["admis", "recale", "Une erreur", "Rien"],
       bonneOption: 1,
+      explicationReponse: "note (8) n'est pas supérieure ou égale à 10, donc la condition du if est fausse : c'est le bloc else qui s'exécute.",
     },
     {
       id: "u3",
@@ -53,6 +55,7 @@ import Base from "../../../layouts/Base.astro";
       reponsesValides: /^age\s*>=\s*18$/,
       placeholder: "age >= 18",
       indiceErreur: "Utilise l'opérateur >= (supérieur ou égal) entre age et 18.",
+      explicationReponse: "age >= 18 est vraie à partir de 18 ans inclus — avec > tout court, 18 exactement serait exclu à tort.",
     },
     {
       id: "u4",
@@ -65,6 +68,7 @@ import Base from "../../../layouts/Base.astro";
       type: "qcm",
       options: ["1 2 3 4", "0 1 2 3", "0 1 2 3 4", "4"],
       bonneOption: 1,
+      explicationReponse: "range(4) produit 4 valeurs en partant de 0 : 0, 1, 2 et 3 — jamais 4 lui-même.",
     },
     {
       id: "u5",
@@ -77,6 +81,7 @@ import Base from "../../../layouts/Base.astro";
       codeDepart: "____________",
       sortieAttendue: /^0\s*1\s*2\s*3\s*4$/,
       indiceCode: "Pense à range(5) pour obtenir 5 tours (0, 1, 2, 3, 4), avec le double-point à la fin et print(i) indenté en dessous.",
+      explicationReponse: "for i in range(5): répète 5 fois avec i prenant successivement 0, 1, 2, 3 puis 4.",
     },
     {
       id: "u6",
@@ -91,6 +96,7 @@ import Base from "../../../layouts/Base.astro";
       type: "qcm",
       options: ["chaud", "doux", "froid", "Une erreur"],
       bonneOption: 2,
+      explicationReponse: "temp (5) n'est ni > 25 ni > 10, donc les deux premières conditions sont fausses : c'est le else, « froid », qui s'exécute.",
     },
     {
       id: "u7",
@@ -104,6 +110,7 @@ import Base from "../../../layouts/Base.astro";
       reponsesValides: /^heure\s*>=\s*9\s*and\s*heure\s*<=\s*18$/,
       placeholder: "heure >= 9 and heure <= 18",
       indiceErreur: "Utilise and pour exiger les deux conditions à la fois : heure >= 9 and heure <= 18.",
+      explicationReponse: "Avec and, il faut que heure >= 9 ET heure <= 18 soient vraies en même temps pour que \"ouvert\" s'affiche.",
     },
     {
       id: "u8",
@@ -116,6 +123,20 @@ import Base from "../../../layouts/Base.astro";
       codeDepart: "compteur = 0\n____________",
       sortieAttendue: /^0\s*1\s*2\s*3\s*4$/,
       indiceCode: "while compteur < 5: puis, indenté en dessous, print(compteur) et compteur = compteur + 1 — sans oublier cette dernière ligne, sinon la boucle ne s'arrête jamais.",
+      explicationReponse: "Tant que compteur < 5 est vrai, le bloc s'exécute : 0, 1, 2, 3, 4, puis compteur devient 5 et la boucle s'arrête.",
+    },
+    {
+      id: "u9",
+      titre: "break : sortir d'une boucle avant la fin",
+      explication:
+        "break arrête immédiatement la boucle en cours, même si la condition (ou range) permettrait encore des tours. Pratique pour s'arrêter dès qu'on a trouvé ce qu'on cherchait, sans attendre la fin.",
+      exemple: ["for i in range(10):\n    if i == 3:\n        break\n    print(i)\n# affiche 0 1 2, puis s'arrête"],
+      consigne: "Que va afficher ce programme ?",
+      code: ["for i in range(10):\n    if i == 2:\n        break\n    print(i)"],
+      type: "qcm",
+      options: ["0 1", "0 1 2", "0 1 2 3 4 5 6 7 8 9", "2"],
+      bonneOption: 0,
+      explicationReponse: "Dès que i vaut 2, break arrête la boucle avant le print de ce tour-là : seuls 0 et 1 ont donc été affichés.",
     },
   ];
 

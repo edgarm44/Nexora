@@ -1,8 +1,8 @@
 ---
 import Base from "../../../layouts/Base.astro";
 ---
-<Base title="Nexora — Données">
-  <span class="commentaire">données</span>
+<Base title="Nexora — Champion">
+  <span class="commentaire">champion</span>
   <h1>Manipuler des données structurées</h1>
   <p class="lede">Tuples, ensembles, mise en forme de texte, et le format JSON utilisé partout sur le web pour échanger des informations entre programmes.</p>
 
@@ -32,6 +32,7 @@ import Base from "../../../layouts/Base.astro";
         "Rien ne se passe, mais la valeur ne change pas",
       ],
       bonneOption: 1,
+      explicationReponse: "Les tuples sont immuables (immutable) : une fois créés, leurs éléments ne peuvent plus être changés. Pour une collection modifiable, il faut une liste.",
     },
     {
       id: "u2",
@@ -45,6 +46,7 @@ import Base from "../../../layouts/Base.astro";
       codeDepart: "point = (3, 4)\n\nprint()",
       sortieAttendue: /^7$/,
       indiceCode: "x, y = point\nprint(x + y)",
+      explicationReponse: "x, y = point sépare le tuple en deux variables (x=3, y=4) d'un coup ; x + y vaut alors 3 + 4 = 7.",
     },
     {
       id: "u3",
@@ -56,6 +58,7 @@ import Base from "../../../layouts/Base.astro";
       type: "qcm",
       options: ["{1, 1, 2, 3, 3, 3}", "{1, 2, 3}", "[1, 2, 3]", "Une erreur"],
       bonneOption: 1,
+      explicationReponse: "Un set ne garde jamais deux fois la même valeur : les doublons de 1 et de 3 disparaissent automatiquement, il ne reste que {1, 2, 3}.",
     },
     {
       id: "u4",
@@ -69,6 +72,7 @@ import Base from "../../../layouts/Base.astro";
       codeDepart: "notes = [12, 15, 12, 9, 15, 18]\nresultat = []\nprint(resultat)",
       sortieAttendue: /\[9,\s*12,\s*15,\s*18\]/,
       indiceCode: "resultat = sorted(list(set(notes)))",
+      explicationReponse: "set(notes) retire les doublons (12 et 15 apparaissaient deux fois), list(...) les remet en liste, et sorted(...) les trie du plus petit au plus grand.",
     },
     {
       id: "u5",
@@ -80,6 +84,7 @@ import Base from "../../../layouts/Base.astro";
       type: "qcm",
       options: ["Résultat : 7 + 3", "Résultat : {7 + 3}", "Résultat : 10", "Une erreur"],
       bonneOption: 2,
+      explicationReponse: "Dans une f-string, {7 + 3} n'est pas affiché tel quel : Python calcule l'expression (10) et insère ce résultat dans le texte.",
     },
     {
       id: "u5b",
@@ -91,6 +96,7 @@ import Base from "../../../layouts/Base.astro";
       type: "qcm",
       options: ["3.14159", "3.14", "3", "Une erreur"],
       bonneOption: 1,
+      explicationReponse: ":.2f garde exactement 2 chiffres après la virgule : 3.14159 devient 3.14 (le reste est arrondi, pas juste coupé).",
     },
     {
       id: "u6",
@@ -104,6 +110,7 @@ import Base from "../../../layouts/Base.astro";
       codeDepart: "moyenne = 14.6789\nprint()",
       sortieAttendue: /Moyenne\s*:\s*14\.7/,
       indiceCode: 'print(f"Moyenne : {moyenne:.1f}")',
+      explicationReponse: ":.1f garde 1 chiffre après la virgule : 14.6789 est arrondi à 14.7, précédé du texte « Moyenne : ».",
     },
     {
       id: "u7",
@@ -120,6 +127,7 @@ import Base from "../../../layouts/Base.astro";
         "Affiche le texte sans rien changer",
       ],
       bonneOption: 0,
+      explicationReponse: "json.loads fait l'inverse de json.dumps : il lit un texte JSON et reconstruit l'objet Python correspondant (dict, liste, etc.).",
     },
     {
       id: "u8",
@@ -133,6 +141,21 @@ import Base from "../../../layouts/Base.astro";
       codeDepart: 'import json\neleve = {"nom": "Ada", "niveau": "expert"}\ntexte = ""\nprint(texte)',
       sortieAttendue: /"nom":\s*"Ada".*"niveau":\s*"expert"/,
       indiceCode: "texte = json.dumps(eleve)",
+      explicationReponse: "json.dumps(eleve) transforme le dictionnaire eleve en une chaîne de texte au format JSON, avec les mêmes clés et valeurs, entre guillemets.",
+    },
+    {
+      id: "u9",
+      titre: "Les dictionnaires en compréhension",
+      explication:
+        "Comme pour les listes, on peut construire un dictionnaire en une ligne : <code>{cle: valeur for ... in ...}</code>. Pratique pour transformer une liste en dictionnaire d'un coup.",
+      exemple: ['noms = [\"ada\", \"bo\", \"cy\"]\nmaj = {n: n.upper() for n in noms}\nprint(maj)\n# {\'ada\': \'ADA\', \'bo\': \'BO\', \'cy\': \'CY\'}'],
+      consigne: "Crée un dictionnaire carres à partir de la liste nombres, où chaque nombre est une clé et son carré la valeur associée, puis affiche-le.",
+      code: ["nombres = [1, 2, 3]", "carres = {}", "print(carres)"],
+      type: "code",
+      codeDepart: "nombres = [1, 2, 3]\ncarres = {}\nprint(carres)",
+      sortieAttendue: /\{1:\s*1,\s*2:\s*4,\s*3:\s*9\}/,
+      indiceCode: "carres = {n: n**2 for n in nombres}",
+      explicationReponse: "{n: n**2 for n in nombres} crée une paire clé/valeur pour chaque nombre : la clé est le nombre lui-même, la valeur son carré.",
     },
   ];
 
@@ -142,7 +165,7 @@ import Base from "../../../layouts/Base.astro";
     corpsId: "exo-body",
     progressionId: "exo-progress",
     base: import.meta.env.BASE_URL,
-    titreFin: "Niveau Données terminé !",
+    titreFin: "Niveau Champion terminé !",
     texteFin: "Tuples, sets, formatage de texte, JSON : tu sais maintenant manipuler des données comme le font les vrais programmes qui échangent des informations sur le web.",
     retourHref: `${import.meta.env.BASE_URL}lecons/`,
   });

@@ -4,7 +4,7 @@ import Base from "../../../layouts/Base.astro";
 <Base title="Nexora — Confirmé">
   <span class="commentaire">confirmé</span>
   <h1>Fonctions, listes et dictionnaires</h1>
-  <p class="lede">Huit notions. Plusieurs se font dans un terminal qui exécute vraiment ton code.</p>
+  <p class="lede">Neuf notions. Plusieurs se font dans un terminal qui exécute vraiment ton code.</p>
 
   <div class="carte" id="exo-card">
     <div class="progression" id="exo-progress"></div>
@@ -28,6 +28,7 @@ import Base from "../../../layouts/Base.astro";
       type: "qcm",
       options: ["5", "10", "25", "Une erreur"],
       bonneOption: 1,
+      explicationReponse: "double(5) exécute return n * 2 avec n = 5, donc renvoie 10. return ne fait qu'un calcul : rien ne s'affiche sans un print() autour.",
     },
     {
       id: "u2",
@@ -40,6 +41,7 @@ import Base from "../../../layouts/Base.astro";
       codeDepart: "def triple(n):\n    return ____\n\nprint(triple(4))",
       sortieAttendue: /^12$/,
       indiceCode: "Remplace ____ par n * 3, puis vérifie que print(triple(4)) est bien présent.",
+      explicationReponse: "triple(4) exécute return 4 * 3, qui renvoie 12 ; print(triple(4)) affiche ensuite cette valeur renvoyée.",
     },
     {
       id: "u3",
@@ -52,6 +54,7 @@ import Base from "../../../layouts/Base.astro";
       type: "qcm",
       options: ["12", "15", "8", "17"],
       bonneOption: 2,
+      explicationReponse: "Les indices commencent à 0 : notes[0] est 12, notes[1] est 15, et notes[2] est bien 8.",
     },
     {
       id: "u4",
@@ -64,6 +67,7 @@ import Base from "../../../layouts/Base.astro";
       codeDepart: "nombres = [2, 4, 6]\n____________",
       sortieAttendue: /^2\s*4\s*6$/,
       indiceCode: "Une boucle for nombre in nombres: suivie d'une ligne indentée avec print(nombre).",
+      explicationReponse: "for nombre in nombres: parcourt directement les valeurs de la liste (2, puis 4, puis 6), sans passer par leurs positions.",
     },
     {
       id: "u5",
@@ -77,6 +81,7 @@ import Base from "../../../layouts/Base.astro";
       reponsesValides: /^"ville"$/,
       placeholder: '"ville"',
       indiceErreur: 'Il faut le nom exact de la clé, entre guillemets : "ville".',
+      explicationReponse: 'infos["ville"] va chercher directement la valeur associée à la clé "ville" dans le dictionnaire, ici "Lyon".',
     },
     {
       id: "u6",
@@ -89,6 +94,7 @@ import Base from "../../../layouts/Base.astro";
       codeDepart: "notes = []\n____________\nprint(notes)",
       sortieAttendue: /^\[12,\s*15\]$/,
       indiceCode: "Deux lignes : notes.append(12) puis notes.append(15), avant le print(notes).",
+      explicationReponse: "Chaque .append() ajoute un élément à la fin de la liste : après les deux appels, notes contient [12, 15] dans cet ordre.",
     },
     {
       id: "u7",
@@ -101,6 +107,7 @@ import Base from "../../../layouts/Base.astro";
       type: "qcm",
       options: ["Léa", "LÉA", "léa", "Une erreur"],
       bonneOption: 1,
+      explicationReponse: ".upper() renvoie une version du texte entièrement en majuscules, sans modifier la variable prenom elle-même.",
     },
     {
       id: "u8",
@@ -118,6 +125,20 @@ import Base from "../../../layouts/Base.astro";
         "Une erreur, .items() n'existe pas",
       ],
       bonneOption: 0,
+      explicationReponse: ".items() donne à chaque tour un couple (clé, valeur) : matiere reçoit la clé et note la valeur associée, pour chaque entrée du dictionnaire.",
+    },
+    {
+      id: "u9",
+      titre: "Découper une liste avec le slicing",
+      explication:
+        "liste[debut:fin] extrait une partie de la liste : les éléments de l'indice debut jusqu'à fin exclu. Très pratique pour prendre seulement une portion d'une liste sans boucle.",
+      exemple: ["nombres = [10, 20, 30, 40, 50]\nprint(nombres[1:3])\n# [20, 30]"],
+      consigne: "Que va afficher ce programme ?",
+      code: ['lettres = ["a", "b", "c", "d", "e"]\nprint(lettres[0:2])'],
+      type: "qcm",
+      options: ["['a', 'b']", "['a', 'b', 'c']", "['b', 'c']", "Une erreur"],
+      bonneOption: 0,
+      explicationReponse: "lettres[0:2] prend les éléments des indices 0 et 1 (fin=2 est exclu) : ['a', 'b'].",
     },
   ];
 
@@ -128,7 +149,7 @@ import Base from "../../../layouts/Base.astro";
     progressionId: "exo-progress",
     base: import.meta.env.BASE_URL,
     titreFin: "Niveau confirmé terminé",
-    texteFin: "Les huit exercices sont faits. Le niveau expert vient de se débloquer.",
+    texteFin: "Les neuf exercices sont faits. Le niveau expert vient de se débloquer.",
     retourHref: `${import.meta.env.BASE_URL}lecons/`,
   });
 </script>

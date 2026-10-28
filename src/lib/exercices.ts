@@ -21,6 +21,7 @@ export interface Unite {
   indiceCode?: string;
   regexHtml?: RegExp; // pour le type "html" : vérifie le code source tapé, pas une sortie exécutée
   indiceHtml?: string;
+  explicationReponse?: string; // affiché après la bonne réponse, pour détailler le pourquoi
 }
 
 export interface OptionsMoteur {
@@ -148,7 +149,11 @@ export function initExercices(opts: OptionsMoteur) {
 
     function proposerSuite(reussi: boolean) {
       if (reussi) marquerTermine(u.id);
+      const explication = u.explicationReponse
+        ? `<p class="retour-explication">${u.explicationReponse}</p>`
+        : "";
       suite.innerHTML = `
+        ${explication}
         <div class="actions" style="margin-top: 1.25rem;">
           <button class="btn" id="btn-suivant" type="button">${current === opts.unites.length - 1 ? "Terminer" : "Exercice suivant"}</button>
         </div>
@@ -258,8 +263,12 @@ export function initExercices(opts: OptionsMoteur) {
           const correct = u.sortieAttendue ? u.sortieAttendue.test(texteSortie) : true;
           if (correct) {
             sortie.classList.add("ok");
+            const explicationCode = u.explicationReponse
+              ? `<p class="retour-explication">${u.explicationReponse}</p>`
+              : "";
             suite.innerHTML = `
               <p class="retour ok" style="margin-top: 1rem;">Exactement le résultat attendu.</p>
+              ${explicationCode}
               <div class="actions" style="margin-top: 0.5rem;">
                 <button class="btn" id="btn-suivant" type="button">${current === opts.unites.length - 1 ? "Terminer" : "Exercice suivant"}</button>
               </div>

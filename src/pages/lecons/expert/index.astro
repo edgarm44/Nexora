@@ -4,7 +4,7 @@ import Base from "../../../layouts/Base.astro";
 <Base title="Nexora — Expert">
   <span class="commentaire">expert</span>
   <h1>Classes, erreurs et modules</h1>
-  <p class="lede">Neuf notions, pour boucler les bases de Python avant de passer au web.</p>
+  <p class="lede">Dix notions, pour boucler les bases de Python avant de passer au web.</p>
 
   <div class="carte" id="exo-card">
     <div class="progression" id="exo-progress"></div>
@@ -28,6 +28,7 @@ import Base from "../../../layouts/Base.astro";
       type: "qcm",
       options: ["abc", "Ce n'est pas un nombre", "Une erreur qui arrête le programme", "Rien"],
       bonneOption: 1,
+      explicationReponse: 'int("abc") déclenche une ValueError car "abc" n\'est pas un nombre valide ; except ValueError l\'intercepte et exécute son print au lieu de planter.',
     },
     {
       id: "u2",
@@ -40,6 +41,7 @@ import Base from "../../../layouts/Base.astro";
       codeDepart: 'liste = [1, 2, 3]\ntry:\n    print(liste[10])\nexcept ____________:\n    print("trop grand")',
       sortieAttendue: /^trop grand$/,
       indiceCode: "L'erreur levée quand un indice de liste n'existe pas s'appelle IndexError.",
+      explicationReponse: "liste[10] n'existe pas (la liste n'a que 3 éléments) : Python lève une IndexError, que except IndexError intercepte.",
     },
     {
       id: "u3",
@@ -55,6 +57,7 @@ import Base from "../../../layouts/Base.astro";
       type: "qcm",
       options: ["Chien", "rex", "Rex", "Une erreur"],
       bonneOption: 2,
+      explicationReponse: 'Chien("Rex") appelle __init__ avec nom = "Rex", qui range cette valeur dans self.nom : rex.nom vaut donc "Rex".',
     },
     {
       id: "u4",
@@ -67,6 +70,7 @@ import Base from "../../../layouts/Base.astro";
       codeDepart: "class Compte:\n    def __init__(self, solde):\n        self.solde = ____\n\nmon_compte = Compte(50)\nprint(mon_compte.solde)",
       sortieAttendue: /^50$/,
       indiceCode: "self.solde doit recevoir le paramètre solde reçu par __init__.",
+      explicationReponse: "self.solde = solde stocke la valeur reçue (50) comme attribut de l'objet ; mon_compte.solde va ensuite la relire.",
     },
     {
       id: "u5",
@@ -79,6 +83,7 @@ import Base from "../../../layouts/Base.astro";
       type: "qcm",
       options: ["1", "2", "3", "Une erreur"],
       bonneOption: 2,
+      explicationReponse: "import random rend le module disponible mais len(nombres) ne dépend pas de lui : la liste a 3 éléments, donc len() renvoie 3.",
     },
     {
       id: "u6",
@@ -91,6 +96,7 @@ import Base from "../../../layouts/Base.astro";
       type: "qcm",
       options: ["stop", "erreur attrapée : stop", "Une erreur qui arrête le programme", "Rien"],
       bonneOption: 1,
+      explicationReponse: 'raise ValueError("stop") déclenche l\'erreur, except ValueError as erreur l\'attrape et range son message ("stop") dans erreur, affiché ensuite.',
     },
     {
       id: "u7",
@@ -103,6 +109,7 @@ import Base from "../../../layouts/Base.astro";
       codeDepart: "class Personnage:\n    def __init__(self, pv):\n        self.pv = pv\n\n    def soigner(self):\n        self.pv = ____________\n\nh = Personnage(50)\nh.soigner()\nprint(h.pv)",
       sortieAttendue: /^60$/,
       indiceCode: "self.pv = self.pv + 10 à l'intérieur de soigner.",
+      explicationReponse: "soigner() ajoute 10 à self.pv : 50 + 10 = 60, et h.pv vaut 60 après l'appel.",
     },
     {
       id: "u8",
@@ -114,6 +121,7 @@ import Base from "../../../layouts/Base.astro";
       type: "qcm",
       options: ["<p>", "<h1>", "<div>", "<title>"],
       bonneOption: 1,
+      explicationReponse: "<h1> est la balise de titre principal, la plus importante d'une page. <p> est pour un paragraphe, <div> pour une simple zone, <title> pour le titre de l'onglet du navigateur.",
     },
     {
       id: "u9",
@@ -125,6 +133,26 @@ import Base from "../../../layouts/Base.astro";
       type: "qcm",
       options: ["size: blue;", "color: blue;", "text: blue;", "font: blue;"],
       bonneOption: 1,
+      explicationReponse: "La propriété CSS qui change la couleur du texte s'appelle color. size, text et font ne sont pas des propriétés CSS valides pour ça.",
+    },
+    {
+      id: "u10",
+      titre: "Une liste d'objets",
+      explication:
+        "On peut ranger plusieurs objets créés à partir d'une même classe dans une liste, puis les parcourir avec une boucle for, exactement comme pour des nombres ou du texte.",
+      exemple: [
+        'class Personnage:\n    def __init__(self, nom, pv):\n        self.nom = nom\n        self.pv = pv\n\nequipe = [Personnage("Léa", 100), Personnage("Sam", 80)]\nfor p in equipe:\n    print(p.nom)',
+      ],
+      consigne: "Complète pour créer deux Personnage (\"Léa\", 100) et (\"Sam\", 80) dans une liste equipe, puis affiche le nom de chacun avec une boucle.",
+      code: [
+        'class Personnage:\n    def __init__(self, nom, pv):\n        self.nom = nom\n        self.pv = pv\n\nequipe = [____________]\nfor p in equipe:\n    print(p.nom)',
+      ],
+      type: "code",
+      codeDepart:
+        'class Personnage:\n    def __init__(self, nom, pv):\n        self.nom = nom\n        self.pv = pv\n\nequipe = [____________]\nfor p in equipe:\n    print(p.nom)',
+      sortieAttendue: /Léa\s*\n\s*Sam/,
+      indiceCode: 'equipe = [Personnage("Léa", 100), Personnage("Sam", 80)]',
+      explicationReponse: "La boucle parcourt chaque objet Personnage de la liste equipe, et p.nom affiche le nom de celui qui est en cours de traitement à chaque tour.",
     },
   ];
 
@@ -135,7 +163,7 @@ import Base from "../../../layouts/Base.astro";
     progressionId: "exo-progress",
     base: import.meta.env.BASE_URL,
     titreFin: "Les quatre premiers niveaux sont terminés",
-    texteFin: "Tu as vu les bases de Python, jusqu'aux classes et aux erreurs, avec un aperçu du HTML et du CSS. Le niveau Web vient de se débloquer.",
+    texteFin: "Tu as vu les bases de Python, jusqu'aux classes et aux erreurs, avec un aperçu du HTML et du CSS. Le niveau Maître vient de se débloquer.",
     retourHref: `${import.meta.env.BASE_URL}lecons/`,
   });
 </script>

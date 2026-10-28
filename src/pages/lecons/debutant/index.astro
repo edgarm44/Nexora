@@ -4,7 +4,7 @@ import Base from "../../../layouts/Base.astro";
 <Base title="Nexora — Débutant">
   <span class="commentaire">débutant</span>
   <h1>Afficher et ranger des valeurs</h1>
-  <p class="lede">Sept petites notions, une par une. Lis, essaie, et avance quand tu es prêt.</p>
+  <p class="lede">Huit petites notions, une par une. Lis, essaie, et avance quand tu es prêt.</p>
 
   <div class="carte" id="exo-card">
     <div class="progression" id="exo-progress"></div>
@@ -28,6 +28,7 @@ import Base from "../../../layouts/Base.astro";
       type: "qcm",
       options: ["Salut Nexora", '"Salut Nexora"', "Une erreur"],
       bonneOption: 0,
+      explicationReponse: "Les guillemets ne font pas partie du texte affiché : ils servent seulement à dire à Python où le texte commence et se termine.",
     },
     {
       id: "u2",
@@ -41,6 +42,7 @@ import Base from "../../../layouts/Base.astro";
       reponsesValides: /^"Bonjour Nexora"$/,
       placeholder: 'ce qui va entre les parenthèses, ex : "mon texte"',
       indiceErreur: 'Il faut le texte exact entre guillemets, par exemple "Bonjour Nexora".',
+      explicationReponse: 'print("Bonjour Nexora") affiche exactement ce qu\'il y a entre les guillemets, lettre pour lettre.',
     },
     {
       id: "u3",
@@ -53,6 +55,7 @@ import Base from "../../../layouts/Base.astro";
       type: "qcm",
       options: ["taille cm", "Je mesure 150 cm", "Je mesure taille cm", "Une erreur"],
       bonneOption: 1,
+      explicationReponse: "Avec une virgule, print() affiche la valeur de la variable (150), pas son nom (taille). Un espace est ajouté automatiquement entre chaque élément.",
     },
     {
       id: "u4",
@@ -65,6 +68,7 @@ import Base from "../../../layouts/Base.astro";
       reponsesValides: /^total\s*=\s*(3\s*\+\s*4|7)$/,
       placeholder: "total = ...",
       indiceErreur: "Le nom de la variable, le signe =, puis le calcul ou le résultat.",
+      explicationReponse: "total = 3 + 4 range directement le résultat du calcul (7) dans la variable total, comme avec n'importe quel calcul.",
     },
     {
       id: "u5",
@@ -77,6 +81,7 @@ import Base from "../../../layouts/Base.astro";
       type: "qcm",
       options: ["<class 'str'>", "<class 'int'>", "Léa", "Une erreur"],
       bonneOption: 0,
+      explicationReponse: "nom contient du texte entre guillemets, donc son type est str (pour string, « chaîne de caractères » en anglais).",
     },
     {
       id: "u6",
@@ -94,6 +99,7 @@ import Base from "../../../layouts/Base.astro";
         "Il ne provoque pas d'erreur",
       ],
       bonneOption: 1,
+      explicationReponse: "age est un nombre (int) et \"J'ai \" est du texte (str). Python refuse de les coller avec + tant que l'un des deux n'a pas été converti, avec str(age) par exemple.",
     },
     {
       id: "u7",
@@ -106,6 +112,20 @@ import Base from "../../../layouts/Base.astro";
       codeDepart: "____________\nprint(total)",
       sortieAttendue: /^42$/,
       indiceCode: "Il faut une ligne du type total = 15 + 27 avant le print(total).",
+      explicationReponse: "total = 15 + 27 calcule 42 et le range dans total ; print(total) affiche ensuite cette valeur, pas le texte \"total\".",
+    },
+    {
+      id: "u8",
+      titre: "Les commentaires, des notes pour les humains",
+      explication:
+        "Une ligne qui commence par # est un commentaire : Python l'ignore complètement lors de l'exécution. Ça sert à expliquer son propre code, pour soi-même ou pour quelqu'un qui le lira plus tard.",
+      exemple: ["# Ceci calcule l'âge dans 10 ans\nage = 13\nprint(age + 10)"],
+      consigne: "Que va afficher ce programme ?",
+      code: ["# affiche un message de bienvenue", 'print("Bienvenue")'],
+      type: "qcm",
+      options: ["# affiche un message de bienvenue", "Bienvenue", "Rien du tout", "Une erreur"],
+      bonneOption: 1,
+      explicationReponse: "La ligne qui commence par # est entièrement ignorée par Python : seul le print(\"Bienvenue\") est réellement exécuté.",
     },
   ];
 
@@ -116,7 +136,7 @@ import Base from "../../../layouts/Base.astro";
     progressionId: "exo-progress",
     base: import.meta.env.BASE_URL,
     titreFin: "Niveau débutant terminé",
-    texteFin: "Les sept exercices sont faits. Le niveau intermédiaire vient de se débloquer.",
+    texteFin: "Les huit exercices sont faits. Le niveau intermédiaire vient de se débloquer.",
     retourHref: `${import.meta.env.BASE_URL}lecons/`,
   });
 </script>

@@ -8,9 +8,9 @@ const niveaux = [
   { id: "confirme", glyphe: "{ }", nom: "Confirmé", desc: "Fonctions, listes, dictionnaires, un vrai terminal.", href: `${base}lecons/confirme/` },
   { id: "expert", glyphe: "#!", nom: "Expert", desc: "Classes, exceptions, modules, un aperçu du HTML.", href: `${base}lecons/expert/` },
   { id: "web", glyphe: "</>", nom: "Maître", desc: "Construire une vraie page HTML, avec aperçu en direct.", href: `${base}lecons/web/` },
-  { id: "algorithmes", glyphe: "ƒ(x)", nom: "Algorithmes", desc: "Compréhensions, lambda, map/filter, récursivité, tri personnalisé.", href: `${base}lecons/algorithmes/` },
-  { id: "donnees", glyphe: "{...}", nom: "Données", desc: "Tuples, ensembles, formatage de texte, JSON.", href: `${base}lecons/donnees/` },
-  { id: "projet", glyphe: "*", nom: "Projet", desc: "Générateurs, gestion complète des erreurs, mini-projet final.", href: `${base}lecons/projet/` },
+  { id: "algorithmes", glyphe: "ƒ(x)", nom: "Virtuose", desc: "Compréhensions, lambda, map/filter, récursivité, tri personnalisé.", href: `${base}lecons/algorithmes/` },
+  { id: "donnees", glyphe: "{...}", nom: "Champion", desc: "Tuples, ensembles, formatage de texte, JSON.", href: `${base}lecons/donnees/` },
+  { id: "projet", glyphe: "*", nom: "Légende", desc: "Générateurs, gestion complète des erreurs, mini-projet final.", href: `${base}lecons/projet/` },
 ];
 ---
 <Base title="Nexora — Exercices">
@@ -49,7 +49,7 @@ const niveaux = [
 
 <script>
   const ORDRE = ["debutant", "intermediaire", "confirme", "expert", "web", "algorithmes", "donnees", "projet"];
-  const TOTAUX_PAR_NIVEAU: Record<string, number> = { debutant: 7, intermediaire: 8, confirme: 8, expert: 9, web: 7, algorithmes: 8, donnees: 9, projet: 8 };
+  const TOTAUX_PAR_NIVEAU: Record<string, number> = { debutant: 8, intermediaire: 9, confirme: 9, expert: 10, web: 8, algorithmes: 9, donnees: 10, projet: 9 };
 
   function progres(niveauId: string): string[] {
     try {
@@ -102,9 +102,11 @@ const niveaux = [
       carte.appendChild(pastille);
     } else if (fait > 0) {
       suite.textContent = "Continuer";
+      const pourcentage = Math.round((fait / total) * 100);
       const pastille = document.createElement("span");
       pastille.className = "pastille";
-      pastille.textContent = `${fait}/${total}`;
+      pastille.textContent = `${pourcentage}%`;
+      pastille.title = `${fait} sur ${total} exercices terminés`;
       carte.appendChild(pastille);
     } else {
       suite.textContent = "Commencer";

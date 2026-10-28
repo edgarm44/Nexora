@@ -53,11 +53,56 @@ body {
   overflow-x: hidden;
 }
 
-/* grille de points très discrète, comme une zone de dessin d'IDE */
+/* fond avec profondeur : grille fine + grille large + lueurs qui dérivent lentement */
 body {
-  background-image: radial-gradient(var(--line) 1px, transparent 1px);
-  background-size: 28px 28px;
-  background-position: -4px -4px;
+  background-image:
+    radial-gradient(var(--line) 1px, transparent 1px),
+    radial-gradient(var(--line-strong) 1px, transparent 1px);
+  background-size: 28px 28px, 112px 112px;
+  background-position: -4px -4px, -4px -4px;
+}
+
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  z-index: -1;
+  pointer-events: none;
+  border-radius: 50%;
+  filter: blur(70px);
+  will-change: transform;
+}
+
+body::before {
+  top: -14rem;
+  left: -12rem;
+  width: 38rem;
+  height: 38rem;
+  background: radial-gradient(circle, var(--blue-soft), transparent 70%);
+  animation: derive-lueur-a 28s ease-in-out infinite alternate;
+}
+
+body::after {
+  bottom: -16rem;
+  right: -10rem;
+  width: 34rem;
+  height: 34rem;
+  background: radial-gradient(circle, var(--yellow-soft), transparent 70%);
+  animation: derive-lueur-b 34s ease-in-out infinite alternate;
+}
+
+@keyframes derive-lueur-a {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(4rem, 3rem) scale(1.12); }
+}
+
+@keyframes derive-lueur-b {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(-3rem, -4rem) scale(1.08); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body::before, body::after { animation: none; }
 }
 
 a { color: inherit; }
@@ -292,6 +337,7 @@ main > p.lede {
   border: 1px solid var(--line);
   border-radius: var(--radius);
   padding: 1.6rem 1.8rem;
+  box-shadow: 0 18px 40px -24px rgba(0, 0, 0, 0.55);
 }
 
 .grille-niveaux {
@@ -310,9 +356,10 @@ main > p.lede {
   padding: 1.4rem 1.6rem;
   text-decoration: none;
   display: block;
-  transition: border-color 0.15s ease, transform 0.15s ease;
+  box-shadow: 0 14px 32px -22px rgba(0, 0, 0, 0.5);
+  transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
 }
-.carte-niveau:hover { border-color: var(--blue); transform: translateY(-2px); }
+.carte-niveau:hover { border-color: var(--blue); transform: translateY(-2px); box-shadow: 0 20px 40px -20px rgba(0, 0, 0, 0.55); }
 .carte-niveau.actif { border-color: var(--yellow); }
 
 .carte-niveau .num-niveau {
@@ -405,6 +452,17 @@ main > p.lede {
 }
 .retour.ok { color: var(--good); }
 .retour.ko { color: var(--bad); }
+
+.retour-explication {
+  margin-top: 0.9rem;
+  padding: 0.8rem 1rem;
+  border-left: 3px solid var(--blue);
+  background: var(--blue-soft);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  font-size: 0.9rem;
+  color: var(--ink-dim);
+  line-height: 1.55;
+}
 
 .exercice { margin-top: 2.25rem; padding-top: 2.25rem; border-top: 1px solid var(--line); }
 .exercice:first-of-type { margin-top: 2.5rem; padding-top: 0; border-top: none; }

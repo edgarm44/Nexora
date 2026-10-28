@@ -1,8 +1,8 @@
 ---
 import Base from "../../../layouts/Base.astro";
 ---
-<Base title="Nexora — Algorithmes">
-  <span class="commentaire">algorithmes</span>
+<Base title="Nexora — Virtuose">
+  <span class="commentaire">virtuose</span>
   <h1>Penser comme un programmeur</h1>
   <p class="lede">Des outils pour écrire du code plus court et plus puissant : transformer des listes en une ligne, créer des fonctions à la volée, et faire qu'une fonction s'appelle elle-même.</p>
 
@@ -27,6 +27,7 @@ import Base from "../../../layouts/Base.astro";
       type: "qcm",
       options: ["[0, 1, 2, 3]", "[1, 2, 3, 4]", "[0, 1, 2, 3, 4]", "Une erreur"],
       bonneOption: 0,
+      explicationReponse: "range(4) donne 0, 1, 2, 3 (4 valeurs à partir de 0) ; [x for x in range(4)] les range simplement dans une liste, sans les transformer.",
     },
     {
       id: "u2",
@@ -40,6 +41,7 @@ import Base from "../../../layouts/Base.astro";
       codeDepart: "carres = []\nprint(carres)",
       sortieAttendue: /\[1,\s*4,\s*9,\s*16,\s*25\]/,
       indiceCode: "Utilise range(1, 6) pour aller de 1 à 5, et élève chaque nombre au carré avec **2.",
+      explicationReponse: "[x**2 for x in range(1, 6)] calcule le carré de 1, 2, 3, 4 et 5, et range chaque résultat dans la liste, dans cet ordre.",
     },
     {
       id: "u3",
@@ -51,6 +53,7 @@ import Base from "../../../layouts/Base.astro";
       type: "qcm",
       options: ["7", "12", "lambda", "Une erreur"],
       bonneOption: 1,
+      explicationReponse: "(lambda x: x * 3)(4) applique immédiatement la fonction à 4 : elle renvoie 4 * 3, soit 12.",
     },
     {
       id: "u4",
@@ -67,6 +70,7 @@ import Base from "../../../layouts/Base.astro";
       codeDepart: "nombres = [1, 2, 3, 4]\nresultat = []\nprint(resultat)",
       sortieAttendue: /\[11,\s*12,\s*13,\s*14\]/,
       indiceCode: "resultat = list(map(lambda x: x + 10, nombres))",
+      explicationReponse: "map applique lambda x: x + 10 à chaque nombre de la liste : 1→11, 2→12, 3→13, 4→14.",
     },
     {
       id: "u5",
@@ -83,6 +87,7 @@ import Base from "../../../layouts/Base.astro";
       codeDepart: "nombres = [1, 2, 3, 4, 5, 6]\nresultat = []\nprint(resultat)",
       sortieAttendue: /\[4,\s*5,\s*6\]/,
       indiceCode: "resultat = list(filter(lambda x: x > 3, nombres))",
+      explicationReponse: "filter garde seulement les nombres pour lesquels x > 3 est vrai : 4, 5 et 6, dans leur ordre d'origine.",
     },
     {
       id: "u6",
@@ -102,6 +107,7 @@ import Base from "../../../layouts/Base.astro";
         "La fonction renvoie 24 quand même",
       ],
       bonneOption: 0,
+      explicationReponse: "Sans le cas de base, factorielle(4) appellerait factorielle(3), puis factorielle(2)... sans jamais s'arrêter, jusqu'à planter le programme (erreur de récursion trop profonde).",
     },
     {
       id: "u7",
@@ -117,6 +123,7 @@ import Base from "../../../layouts/Base.astro";
       codeDepart: "def factorielle(n):\n    pass\n\nprint(factorielle(5))",
       sortieAttendue: /^120$/,
       indiceCode: "N'oublie pas le cas de base : if n == 0: return 1. Puis : return n * factorielle(n - 1).",
+      explicationReponse: "factorielle(5) = 5 * factorielle(4) = 5 * 4 * factorielle(3) = ... = 5 * 4 * 3 * 2 * 1 = 120.",
     },
     {
       id: "u8",
@@ -135,6 +142,21 @@ import Base from "../../../layouts/Base.astro";
         "Provoque une erreur car len n'est pas un nombre",
       ],
       bonneOption: 1,
+      explicationReponse: "key=len demande à sorted() de comparer les mots selon le résultat de len(mot), c'est-à-dire leur longueur, du plus court au plus long.",
+    },
+    {
+      id: "u9",
+      titre: "Combiner compréhension et condition",
+      explication:
+        "Une liste en compréhension peut aussi filtrer : <code>[x for x in liste if condition]</code> ne garde que les éléments qui vérifient la condition, comme un map et un filter réunis en une seule ligne.",
+      exemple: ["nombres = [1, 2, 3, 4, 5, 6]\npairs = [x for x in nombres if x % 2 == 0]\nprint(pairs)\n# [2, 4, 6]"],
+      consigne: "Crée une liste en compréhension carres_pairs contenant le carré de chaque nombre pair de 1 à 10 (inclus), puis affiche-la.",
+      code: ["carres_pairs = []", "print(carres_pairs)"],
+      type: "code",
+      codeDepart: "carres_pairs = []\nprint(carres_pairs)",
+      sortieAttendue: /\[4,\s*16,\s*36,\s*64,\s*100\]/,
+      indiceCode: "carres_pairs = [x**2 for x in range(1, 11) if x % 2 == 0]",
+      explicationReponse: "Pour chaque x de 1 à 10, la condition if x % 2 == 0 ne garde que les nombres pairs (2, 4, 6, 8, 10), dont on calcule ensuite le carré.",
     },
   ];
 
@@ -144,7 +166,7 @@ import Base from "../../../layouts/Base.astro";
     corpsId: "exo-body",
     progressionId: "exo-progress",
     base: import.meta.env.BASE_URL,
-    titreFin: "Niveau Algorithmes terminé !",
+    titreFin: "Niveau Virtuose terminé !",
     texteFin: "Compréhensions de liste, lambda, map, filter, récursivité, tri personnalisé : tu manipules maintenant des outils que beaucoup de programmeurs expérimentés utilisent au quotidien.",
     retourHref: `${import.meta.env.BASE_URL}lecons/`,
   });

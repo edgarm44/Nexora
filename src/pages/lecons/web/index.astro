@@ -26,6 +26,7 @@ import Base from "../../../layouts/Base.astro";
       type: "qcm",
       options: ["<head>", "<body>", "<title>", "<html>"],
       bonneOption: 1,
+      explicationReponse: "<body> contient tout ce qui s'affiche réellement sur la page : titres, textes, images. <head> contient des informations techniques invisibles à l'écran.",
     },
     {
       id: "u2",
@@ -38,6 +39,7 @@ import Base from "../../../layouts/Base.astro";
       codeDepart: "<h1></h1>\n<p></p>",
       regexHtml: /<h1>\s*Mon site\s*<\/h1>[\s\S]*<p>\s*Bienvenue\s*<\/p>/i,
       indiceHtml: 'Mets "Mon site" entre <h1> et </h1>, puis "Bienvenue" entre <p> et </p>, dans cet ordre.',
+      explicationReponse: "<h1>Mon site</h1> affiche le titre, et <p>Bienvenue</p> affiche juste en dessous le paragraphe, dans l'ordre où ils apparaissent dans le code.",
     },
     {
       id: "u3",
@@ -51,6 +53,7 @@ import Base from "../../../layouts/Base.astro";
       reponsesValides: /^"https:\/\/example\.com"$/,
       placeholder: '"https://example.com"',
       indiceErreur: 'Mets l\'adresse exacte entre guillemets : "https://example.com".',
+      explicationReponse: 'href="https://example.com" indique au navigateur où aller quand on clique sur "Clique ici", le texte visible entre <a> et </a>.',
     },
     {
       id: "u4",
@@ -63,6 +66,7 @@ import Base from "../../../layouts/Base.astro";
       type: "qcm",
       options: ["Une liste à puces avec Un et Deux", "Un tableau", "Un lien", "Une erreur"],
       bonneOption: 0,
+      explicationReponse: "<ul> crée une liste à puces, et chaque <li> à l'intérieur devient un élément de cette liste : ici Un et Deux.",
     },
     {
       id: "u5",
@@ -74,6 +78,7 @@ import Base from "../../../layouts/Base.astro";
       type: "qcm",
       options: ["src", "alt", "title", "href"],
       bonneOption: 1,
+      explicationReponse: "alt (texte alternatif) décrit l'image en mots : un lecteur d'écran le lit à voix haute, et il s'affiche aussi si l'image ne charge pas.",
     },
     {
       id: "u6",
@@ -90,6 +95,7 @@ import Base from "../../../layouts/Base.astro";
         '<script src="styles.css">',
       ],
       bonneOption: 1,
+      explicationReponse: '<link rel="stylesheet" href="styles.css"> dans le <head> indique au navigateur de charger ce fichier CSS et d\'appliquer ses règles à la page.',
     },
     {
       id: "u7",
@@ -103,6 +109,20 @@ import Base from "../../../layouts/Base.astro";
       codeDepart: "<h1></h1>\n<p></p>\n<a href=\"\"></a>",
       regexHtml: /<h1>\s*Nexora\s*<\/h1>[\s\S]*<p>[^<]+<\/p>[\s\S]*<a\s+href="[^"]+">\s*En savoir plus\s*<\/a>/i,
       indiceHtml: 'Vérifie les trois éléments dans l\'ordre : <h1>Nexora</h1>, un <p> non vide, puis <a href="...">En savoir plus</a>.',
+      explicationReponse: "Chaque balise a son rôle : <h1> pour le titre, <p> pour le texte de présentation, <a href=\"...\"> pour le lien cliquable final.",
+    },
+    {
+      id: "u8",
+      titre: "Les commentaires en HTML",
+      explication:
+        "Comme les # en Python, HTML a ses propres commentaires : tout ce qui est entre <!-- et --> est ignoré par le navigateur et ne s'affiche jamais à l'écran.",
+      exemple: ["<!-- ceci est une note pour le développeur -->\n<h1>Bonjour</h1>"],
+      consigne: "Que va afficher ce code dans la page ?",
+      code: ["<!-- Titre principal -->\n<h1>Nexora</h1>"],
+      type: "qcm",
+      options: ["Titre principal, puis Nexora", "Nexora seulement", "Titre principal seulement", "Une erreur"],
+      bonneOption: 1,
+      explicationReponse: "Le commentaire <!-- Titre principal --> est entièrement ignoré par le navigateur : seul <h1>Nexora</h1> s'affiche réellement.",
     },
   ];
 
@@ -112,8 +132,8 @@ import Base from "../../../layouts/Base.astro";
     corpsId: "exo-body",
     progressionId: "exo-progress",
     base: import.meta.env.BASE_URL,
-    titreFin: "Niveau Web terminé",
-    texteFin: "Tu sais maintenant construire une page HTML simple. La suite du parcours arrive bientôt.",
+    titreFin: "Niveau Maître terminé",
+    texteFin: "Tu sais maintenant construire une page HTML simple. Le niveau Virtuose vient de se débloquer.",
     retourHref: `${import.meta.env.BASE_URL}lecons/`,
   });
 </script>

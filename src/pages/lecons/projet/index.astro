@@ -1,8 +1,8 @@
 ---
 import Base from "../../../layouts/Base.astro";
 ---
-<Base title="Nexora — Projet">
-  <span class="commentaire">projet</span>
+<Base title="Nexora — Légende">
+  <span class="commentaire">légende</span>
   <h1>Tout combiner</h1>
   <p class="lede">Générateurs, gestion d'erreurs complète, bonnes pratiques, et un mini-projet final qui rassemble tout ce que tu as appris depuis le début.</p>
 
@@ -34,6 +34,7 @@ import Base from "../../../layouts/Base.astro";
         "return ne peut être utilisé qu'une seule fois, yield jamais",
       ],
       bonneOption: 1,
+      explicationReponse: "yield renvoie une valeur mais garde l'état de la fonction en mémoire, prête à reprendre au tour suivant. return, lui, termine la fonction pour de bon.",
     },
     {
       id: "u2",
@@ -60,6 +61,7 @@ import Base from "../../../layouts/Base.astro";
         "def carres_jusqua(n):\n    for i in range(1, n + 1):\n        pass\n\nresultat = []\nfor c in carres_jusqua(5):\n    resultat.append(c)\nprint(resultat)",
       sortieAttendue: /\[1,\s*4,\s*9,\s*16,\s*25\]/,
       indiceCode: "Remplace pass par : yield i * i",
+      explicationReponse: "Le générateur produit 1, 4, 9, 16 puis 25 (les carrés de 1 à 5), un par un, et la boucle for les ajoute à resultat au fur et à mesure.",
     },
     {
       id: "u3",
@@ -78,6 +80,7 @@ import Base from "../../../layouts/Base.astro";
         "Une erreur non interceptée, le programme s'arrête",
       ],
       bonneOption: 0,
+      explicationReponse: "10 / 0 déclenche une ZeroDivisionError, interceptée par le premier except correspondant ; finally s'exécute ensuite quoi qu'il arrive.",
     },
     {
       id: "u4",
@@ -102,6 +105,7 @@ import Base from "../../../layouts/Base.astro";
         'valeur = "abc"\ntry:\n    nombre = int(valeur)\n    print(nombre)\nexcept Exception:\n    pass',
       sortieAttendue: /Entrée invalide\s*\n\s*fin/,
       indiceCode: 'except ValueError:\n    print("Entrée invalide")\nfinally:\n    print("fin")',
+      explicationReponse: 'int("abc") lève une ValueError, interceptée par except ValueError qui affiche "Entrée invalide" ; finally affiche "fin" dans tous les cas, erreur ou pas.',
     },
     {
       id: "u5",
@@ -120,6 +124,7 @@ import Base from "../../../layouts/Base.astro";
         "Il n'a aucun avantage, c'est juste une autre syntaxe",
       ],
       bonneOption: 1,
+      explicationReponse: "Sans with, une erreur en plein milieu du bloc pourrait empêcher le fichier de se refermer correctement. with s'en charge automatiquement, même si une erreur survient.",
     },
     {
       id: "u6",
@@ -144,6 +149,7 @@ import Base from "../../../layouts/Base.astro";
         'def moyenne(notes):\n    pass\n\nnotes = [12, 8, 15, 10, 17]\nm = moyenne(notes)\nprint(f"{m:.1f}")',
       sortieAttendue: /^12\.4$/,
       indiceCode: "return sum(notes) / len(notes)",
+      explicationReponse: "sum(notes) additionne toutes les notes (62), len(notes) compte combien il y en a (5) : 62 / 5 = 12.4.",
     },
     {
       id: "u7",
@@ -162,6 +168,7 @@ import Base from "../../../layouts/Base.astro";
         "Dans un commentaire avec #, n'importe où",
       ],
       bonneOption: 1,
+      explicationReponse: "La docstring se place juste après def nom(...): , entre triples guillemets : les éditeurs et outils savent alors où la trouver automatiquement.",
     },
     {
       id: "u8",
@@ -185,6 +192,31 @@ import Base from "../../../layouts/Base.astro";
       sortieAttendue: /^12\.5$/,
       indiceCode:
         'notes_admises = [e["note"] for e in eleves if e["note"] >= 10]\nm = sum(notes_admises) / len(notes_admises)',
+      explicationReponse: "Seules Ada (14) et Cy (11) ont une note >= 10 ; leur moyenne est (14 + 11) / 2 = 12.5. Bo (8) est exclu par la condition du filtre.",
+    },
+    {
+      id: "u9",
+      titre: "Dernier défi : compter les mots d'une phrase",
+      explication:
+        "<code>.split()</code> découpe un texte en une liste de mots, aux espaces par défaut. <code>dictionnaire.get(cle, 0)</code> renvoie la valeur associée à cle, ou 0 si elle n'existe pas encore — pratique pour compter sans provoquer d'erreur au premier passage.",
+      exemple: [
+        'phrase = "a b a"\nmots = phrase.split()\nprint(mots)\n# [\'a\', \'b\', \'a\']',
+      ],
+      consigne:
+        "Pour chaque mot de <code>mots</code>, augmente son compteur dans le dictionnaire <code>compteur</code> (en utilisant .get pour démarrer à 0), puis affiche compteur.",
+      code: [
+        'phrase = "chat chien chat oiseau chat"',
+        "mots = phrase.split()",
+        "compteur = {}",
+        "print(compteur)",
+      ],
+      type: "code",
+      codeDepart:
+        'phrase = "chat chien chat oiseau chat"\nmots = phrase.split()\ncompteur = {}\nprint(compteur)',
+      sortieAttendue: /'chat':\s*3[\s\S]*'chien':\s*1[\s\S]*'oiseau':\s*1/,
+      indiceCode:
+        "for mot in mots:\n    compteur[mot] = compteur.get(mot, 0) + 1",
+      explicationReponse: "Pour chaque mot rencontré, compteur.get(mot, 0) + 1 ajoute 1 à son compteur (0 s'il n'existait pas encore) : \"chat\" apparaît 3 fois, les deux autres 1 fois chacun.",
     },
   ];
 
