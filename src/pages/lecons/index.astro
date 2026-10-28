@@ -1,41 +1,48 @@
 ---
 import Base from "../../layouts/Base.astro";
+const base = import.meta.env.BASE_URL;
+
+const niveaux = [
+  { id: "debutant", num: "01", nom: "Débutant", desc: "Afficher un message, utiliser des variables.", href: `${base}lecons/debutant/variables/`, pret: true },
+  { id: "intermediaire", num: "02", nom: "Intermédiaire", desc: "Conditions, boucles, logique de base.", href: null, pret: false },
+  { id: "confirme", num: "03", nom: "Confirmé", desc: "Fonctions, listes, dictionnaires, fichiers.", href: null, pret: false },
+  { id: "expert", num: "04", nom: "Expert", desc: "Classes, exceptions, modules, puis le web statique.", href: null, pret: false },
+];
 ---
 <Base title="Nexora — Leçons">
-  <span class="tag">Parcours</span>
-  <h1>Leçons</h1>
-  <p>Des séances de 5 à 10 minutes, du premier print() jusqu'au site publié.</p>
+  <span class="commentaire">parcours</span>
+  <h1>Les leçons</h1>
+  <p class="lede">Des séances de 5 à 10 minutes, du premier print() jusqu'au site publié. Quatre niveaux, dans l'ordre.</p>
 
-  <div id="niveaux">
-    <div class="niveau-card" data-niveau="debutant">
-      <h3>Débutant</h3>
-      <p>Variables, types, premiers affichages. À construire.</p>
-    </div>
-    <div class="niveau-card" data-niveau="intermediaire">
-      <h3>Intermédiaire</h3>
-      <p>Conditions, boucles, logique de base. À construire.</p>
-    </div>
-    <div class="niveau-card" data-niveau="confirme">
-      <h3>Confirmé</h3>
-      <p>Fonctions, listes, dictionnaires, fichiers. À construire.</p>
-    </div>
-    <div class="niveau-card" data-niveau="expert">
-      <h3>Expert</h3>
-      <p>Classes, exceptions, modules, puis HTML/CSS et site statique. À construire.</p>
-    </div>
+  <div class="grille-niveaux" id="niveaux">
+    {niveaux.map((n) => (
+      n.pret ? (
+        <a class="carte-niveau" data-niveau={n.id} href={n.href}>
+          <span class="num-niveau">{n.num}</span>
+          <h3>{n.nom}</h3>
+          <p>{n.desc}</p>
+        </a>
+      ) : (
+        <div class="carte-niveau" data-niveau={n.id} style="opacity: 0.6;">
+          <span class="num-niveau">{n.num}</span>
+          <h3>{n.nom}</h3>
+          <p>{n.desc} — bientôt.</p>
+        </div>
+      )
+    ))}
   </div>
 </Base>
 
 <script>
   const niveau = localStorage.getItem("nexora_niveau");
   if (niveau) {
-    const card = document.querySelector(`.niveau-card[data-niveau="${niveau}"]`);
-    if (card) {
-      card.classList.add("actif");
-      const badge = document.createElement("span");
-      badge.className = "badge-niveau";
-      badge.textContent = "Ton niveau";
-      card.appendChild(badge);
+    const carte = document.querySelector(`.carte-niveau[data-niveau="${niveau}"]`);
+    if (carte) {
+      carte.classList.add("actif");
+      const pastille = document.createElement("span");
+      pastille.className = "pastille";
+      pastille.textContent = "ton niveau";
+      carte.appendChild(pastille);
     }
   }
 </script>

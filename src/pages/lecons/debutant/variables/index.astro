@@ -1,0 +1,133 @@
+---
+import Base from "../../../../layouts/Base.astro";
+const base = import.meta.env.BASE_URL;
+---
+<Base title="Nexora — Afficher un message">
+  <span class="commentaire">débutant · leçon 1</span>
+  <h1>Afficher un message</h1>
+  <p class="lede">
+    La toute première chose qu'on apprend en Python : afficher du texte à l'écran, et le ranger
+    dans une variable pour le réutiliser.
+  </p>
+
+  <h2>print() affiche quelque chose</h2>
+  <p style="color: var(--ink-dim); max-width: 60ch;">
+    La fonction <code>print()</code> affiche ce qu'on met entre les parenthèses. Si c'est du texte,
+    il faut l'entourer de guillemets.
+  </p>
+  <div class="terminal" style="margin: 1rem 0 2rem;">
+    <div class="terminal-barre"><span>python</span></div>
+    <div class="terminal-corps">
+      <div class="terminal-ligne"><span class="num">1</span><span>print("Bonjour tout le monde")</span></div>
+    </div>
+  </div>
+
+  <h2>Une variable, c'est une boîte avec un nom</h2>
+  <p style="color: var(--ink-dim); max-width: 60ch;">
+    On range une valeur dans une variable avec le signe <code>=</code>. On peut ensuite réutiliser
+    cette variable, y compris à l'intérieur d'un <code>print()</code>.
+  </p>
+  <div class="terminal" style="margin: 1rem 0 2.5rem;">
+    <div class="terminal-barre"><span>python</span></div>
+    <div class="terminal-corps">
+      <div class="terminal-ligne"><span class="num">1</span><span>prenom = "Léa"</span></div>
+      <div class="terminal-ligne"><span class="num">2</span><span>print("Bonjour", prenom)</span></div>
+    </div>
+  </div>
+
+  <div class="exercice" data-ex="qcm">
+    <span class="commentaire">exercice 1 · qcm</span>
+    <p class="question">Que va afficher ce programme ?</p>
+    <div class="terminal" style="margin-bottom: 1.1rem;">
+      <div class="terminal-barre"><span>python</span></div>
+      <div class="terminal-corps">
+        <div class="terminal-ligne"><span class="num">1</span><span>age = 12</span></div>
+        <div class="terminal-ligne"><span class="num">2</span><span>print("J'ai", age, "ans")</span></div>
+      </div>
+    </div>
+    <div class="options" id="ex1-options">
+      <button class="option" data-ok="false">age ans</button>
+      <button class="option" data-ok="true">J'ai 12 ans</button>
+      <button class="option" data-ok="false">J'ai age ans</button>
+      <button class="option" data-ok="false">Une erreur</button>
+    </div>
+  </div>
+
+  <div class="exercice" data-ex="completer">
+    <span class="commentaire">exercice 2 · code à compléter</span>
+    <p class="question">Complète la ligne pour que le programme affiche : Bonjour Nexora</p>
+    <div class="terminal" style="margin-bottom: 1.1rem;">
+      <div class="terminal-barre"><span>python</span></div>
+      <div class="terminal-corps">
+        <div class="terminal-ligne"><span class="num">1</span><span>print(____________)</span></div>
+      </div>
+    </div>
+    <input class="champ-reponse" id="ex2-input" type="text" placeholder='ce qui va entre les parenthèses, ex : "mon texte"' autocomplete="off" />
+    <div class="actions"><button class="btn-ghost" id="ex2-verifier" type="button">Vérifier</button></div>
+    <p class="retour" id="ex2-retour"></p>
+  </div>
+
+  <div class="exercice" data-ex="ecrire">
+    <span class="commentaire">exercice 3 · à toi d'écrire</span>
+    <p class="question">
+      Écris une ligne de code qui range le nombre 7 dans une variable appelée <code>x</code>.
+    </p>
+    <input class="champ-reponse" id="ex3-input" type="text" placeholder="x = ..." autocomplete="off" />
+    <div class="actions"><button class="btn-ghost" id="ex3-verifier" type="button">Vérifier</button></div>
+    <p class="retour" id="ex3-retour"></p>
+  </div>
+
+  <div class="actions" style="margin-top: 3rem;">
+    <a class="btn" href={`${base}lecons/`}>Retour aux leçons</a>
+  </div>
+</Base>
+
+<script>
+  // Exercice 1 : QCM
+  document.querySelectorAll<HTMLButtonElement>("#ex1-options .option").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const boutons = document.querySelectorAll<HTMLButtonElement>("#ex1-options .option");
+      boutons.forEach((b) => (b.disabled = true));
+      if (btn.dataset.ok === "true") {
+        btn.classList.add("bonne");
+      } else {
+        btn.classList.add("mauvaise");
+        boutons.forEach((b) => { if (b.dataset.ok === "true") b.classList.add("bonne"); });
+      }
+    });
+  });
+
+  function normaliser(s: string) {
+    return s.trim().replace(/\s+/g, " ").replace(/'/g, '"');
+  }
+
+  // Exercice 2 : compléter
+  const ex2Reponses = ['"Bonjour Nexora"'];
+  document.getElementById("ex2-verifier")!.addEventListener("click", () => {
+    const input = document.getElementById("ex2-input") as HTMLInputElement;
+    const retour = document.getElementById("ex2-retour")!;
+    const val = normaliser(input.value);
+    if (ex2Reponses.includes(val)) {
+      retour.textContent = "C'est exact.";
+      retour.className = "retour ok";
+    } else {
+      retour.textContent = 'Pas tout à fait : il faut le texte exact entre guillemets, par exemple "Bonjour Nexora".';
+      retour.className = "retour ko";
+    }
+  });
+
+  // Exercice 3 : écrire une ligne
+  const ex3Valide = /^x\s*=\s*7$/;
+  document.getElementById("ex3-verifier")!.addEventListener("click", () => {
+    const input = document.getElementById("ex3-input") as HTMLInputElement;
+    const retour = document.getElementById("ex3-retour")!;
+    const val = normaliser(input.value);
+    if (ex3Valide.test(val)) {
+      retour.textContent = "Exactement ça.";
+      retour.className = "retour ok";
+    } else {
+      retour.textContent = "Essaie encore : il faut le nom de la variable, le signe =, puis le nombre.";
+      retour.className = "retour ko";
+    }
+  });
+</script>

@@ -2,12 +2,12 @@
 import Base from "../../layouts/Base.astro";
 ---
 <Base title="Nexora — Test de positionnement">
-  <span class="tag">Étape 1</span>
-  <h1>Test de positionnement</h1>
-  <p>Quelques questions pour trouver ton point de départ. Réponds du mieux que tu peux, il n'y a rien à préparer.</p>
+  <span class="commentaire">étape 1</span>
+  <h1>Où en es-tu ?</h1>
+  <p class="lede">Quelques questions pour trouver ton point de départ. Rien à préparer, réponds du mieux que tu peux.</p>
 
-  <div class="card" id="quiz-card">
-    <div class="quiz-progress" id="quiz-progress"></div>
+  <div class="carte" id="quiz-card">
+    <div class="progression" id="quiz-progress"></div>
     <div id="quiz-body"></div>
   </div>
 </Base>
@@ -104,7 +104,6 @@ import Base from "../../layouts/Base.astro";
   const body = document.getElementById("quiz-body")!;
   const progress = document.getElementById("quiz-progress")!;
 
-  // Déroulé : question de départ, puis deux questions par niveau tant que c'est correct.
   type Step =
     | { kind: "gate" }
     | { kind: "question"; niveauIndex: number; questionIndex: number };
@@ -123,10 +122,27 @@ import Base from "../../layouts/Base.astro";
     progress.innerHTML = "";
     for (let i = 0; i < steps.length; i++) {
       const span = document.createElement("span");
-      if (i < current) span.className = "done";
-      else if (i === current) span.className = "current";
+      if (i < current) span.className = "fait";
+      else if (i === current) span.className = "courant";
       progress.appendChild(span);
     }
+  }
+
+  function codeBlockHTML(code: string) {
+    const lignes = code.split("\n");
+    return `
+      <div class="terminal" style="margin-bottom: 1.25rem;">
+        <div class="terminal-barre"><span>python</span></div>
+        <div class="terminal-corps">
+          ${lignes
+            .map(
+              (l, i) =>
+                `<div class="terminal-ligne"><span class="num">${i + 1}</span><span>${l.replace(/</g, "&lt;")}</span></div>`
+            )
+            .join("")}
+        </div>
+      </div>
+    `;
   }
 
   function finirAu(niveau: Niveau) {
@@ -139,24 +155,24 @@ import Base from "../../layouts/Base.astro";
     progress.innerHTML = "";
     const label = NIVEAUX.find((n) => n.id === niveauAtteint)?.label ?? "Débutant";
     body.innerHTML = `
-      <div class="quiz-result">
-        <span class="tag">Résultat</span>
-        <h2>Ton niveau de départ : <span class="niveau">${label}</span></h2>
-        <p style="color: var(--fg-dim);">On a préparé des leçons courtes adaptées à ce niveau. Tu pourras toujours changer de niveau plus tard.</p>
-        <a class="btn" href="${base}lecons/">Voir mes leçons</a>
+      <div class="resultat">
+        <span class="commentaire">résultat</span>
+        <h2>Ton niveau de départ : <span class="niveau-mot">${label}</span></h2>
+        <p style="color: var(--ink-dim);">On a préparé des leçons courtes adaptées à ce niveau. Tu pourras toujours en changer plus tard.</p>
+        <div class="actions"><a class="btn" href="${base}lecons/">Voir mes leçons</a></div>
       </div>
     `;
   }
 
   function renderGate() {
     body.innerHTML = `
-      <p class="quiz-question">As-tu déjà écrit du code avant, en Python ou dans un autre langage ?</p>
-      <div class="quiz-options">
-        <button class="quiz-option" data-answer="oui">Oui, un peu</button>
-        <button class="quiz-option" data-answer="non">Non, jamais</button>
+      <p class="question">As-tu déjà écrit du code avant, en Python ou dans un autre langage ?</p>
+      <div class="options">
+        <button class="option" data-answer="oui">Oui, un peu</button>
+        <button class="option" data-answer="non">Non, jamais</button>
       </div>
     `;
-    body.querySelectorAll<HTMLButtonElement>(".quiz-option").forEach((btn) => {
+    body.querySelectorAll<HTMLButtonElement>(".option").forEach((btn) => {
       btn.addEventListener("click", () => {
         if (btn.dataset.answer === "non") {
           finirAu("debutant");
@@ -174,34 +190,33 @@ import Base from "../../layouts/Base.astro";
     const q = niveau.questions[questionIndex];
 
     body.innerHTML = `
-      <span class="tag">${niveau.label}</span>
-      <p class="quiz-question">${q.enonce}</p>
-      ${q.code ? `<pre class="quiz-code">${q.code}</pre>` : ""}
-      <div class="quiz-options">
+      <span class="commentaire">${niveau.label.toLowerCase()}</span>
+      <p class="question">${q.enonce}</p>
+      ${q.code ? codeBlockHTML(q.code) : ""}
+      <div class="options">
         ${q.options
-          .map((opt, i) => `<button class="quiz-option" data-index="${i}">${opt}</button>`)
+          .map((opt, i) => `<button class="option" data-index="${i}">${opt}</button>`)
           .join("")}
       </div>
     `;
 
-    const buttons = body.querySelectorAll<HTMLButtonElement>(".quiz-option");
+    const buttons = body.querySelectorAll<HTMLButtonElement>(".option");
     buttons.forEach((btn) => {
       btn.addEventListener("click", () => {
         const choisi = Number(btn.dataset.index);
         buttons.forEach((b) => (b.disabled = true));
 
         if (choisi === q.bonne) {
-          btn.classList.add("correct");
+          btn.classList.add("bonne");
         } else {
-          btn.classList.add("wrong");
-          buttons[q.bonne].classList.add("correct");
+          btn.classList.add("mauvaise");
+          buttons[q.bonne].classList.add("bonne");
         }
 
         setTimeout(() => {
           const dernierQuestionDuNiveau = questionIndex === niveau.questions.length - 1;
 
           if (choisi !== q.bonne) {
-            // Échec : on s'arrête au niveau précédent (ou débutant si c'était le premier).
             const niveauFinal = niveauIndex === 0 ? "debutant" : NIVEAUX[niveauIndex - 1].id;
             finirAu(niveauFinal);
             return;
@@ -209,11 +224,9 @@ import Base from "../../layouts/Base.astro";
 
           if (dernierQuestionDuNiveau) {
             if (niveauIndex === NIVEAUX.length - 1) {
-              // Dernier niveau réussi en entier.
               finirAu(niveau.id);
               return;
             }
-            // Niveau réussi, on tente le suivant.
           }
 
           current++;

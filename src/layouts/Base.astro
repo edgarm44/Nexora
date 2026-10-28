@@ -1,5 +1,18 @@
 ---
 const { title = "Nexora" } = Astro.props;
+const base = import.meta.env.BASE_URL;
+const path = Astro.url.pathname;
+
+const onglets = [
+  { href: base, label: "accueil.py", match: base },
+  { href: `${base}test/`, label: "test.py", match: `${base}test/` },
+  { href: `${base}lecons/`, label: "lecons.py", match: `${base}lecons` },
+];
+
+function estActif(match: string) {
+  if (match === base) return path === base;
+  return path.startsWith(match);
+}
 ---
 <!doctype html>
 <html lang="fr">
@@ -7,18 +20,35 @@ const { title = "Nexora" } = Astro.props;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
-    <link rel="stylesheet" href={`${import.meta.env.BASE_URL}styles.css`} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Sora:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href={`${base}styles.css`} />
   </head>
   <body>
     <header>
-      <nav>
-        <a href={import.meta.env.BASE_URL}>Nexora</a>
-        <a href={`${import.meta.env.BASE_URL}test/`}>Test de positionnement</a>
-        <a href={`${import.meta.env.BASE_URL}lecons/`}>Leçons</a>
+      <div class="barre-titre">
+        <span class="feu"></span>
+        <span class="feu"></span>
+        <span class="feu"></span>
+        <span class="chemin">~/nexora</span>
+      </div>
+      <nav class="onglets">
+        {onglets.map((o) => (
+          <a href={o.href} class="onglet" aria-current={estActif(o.match) ? "page" : undefined}>
+            {o.label}
+          </a>
+        ))}
       </nav>
     </header>
     <main>
       <slot />
     </main>
+    <footer>
+      <p>Nexora — un projet pour apprendre Python, une ligne à la fois.</p>
+    </footer>
   </body>
 </html>

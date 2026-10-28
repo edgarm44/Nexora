@@ -3,11 +3,78 @@ import Base from "../layouts/Base.astro";
 const base = import.meta.env.BASE_URL;
 ---
 <Base title="Nexora — Apprendre Python">
-  <span class="tag">Python · depuis zéro</span>
-  <h1>Nexora</h1>
-  <p>Apprends à coder en Python depuis la base, par séances courtes de 5 à 10 minutes. Jusqu'à publier ton propre site, tout seul.</p>
-  <div>
-    <a class="btn" href={`${base}test/`}>Commencer le test de positionnement</a>
-    <a class="btn-ghost" href={`${base}lecons/`}>Voir les leçons</a>
+  <div class="hero">
+    <div class="hero-lueur"></div>
+    <div>
+      <span class="commentaire">bienvenue</span>
+      <h1>Apprends Python, une ligne à la fois.</h1>
+      <p class="lede">
+        Des séances de 5 à 10 minutes, depuis ton tout premier print() jusqu'au
+        jour où tu publies ton propre site. Pas de compte à créer, pas de jargon :
+        on commence par savoir où tu en es.
+      </p>
+      <div class="actions">
+        <a class="btn" href={`${base}test/`}>Trouver mon niveau</a>
+        <a class="btn-ghost" href={`${base}lecons/`}>Voir les leçons</a>
+      </div>
+    </div>
+
+    <div class="terminal" aria-hidden="true">
+      <div class="terminal-barre">
+        <span>bonjour.py</span>
+      </div>
+      <div class="terminal-corps" id="hero-terminal"></div>
+    </div>
   </div>
 </Base>
+
+<script>
+  const lignes = [
+    { num: 1, texte: 'nom = "toi"' },
+    { num: 2, texte: 'print("Salut,", nom)' },
+    { num: 3, texte: "" },
+    { num: 4, texte: "# et ça continue..." },
+  ];
+
+  const el = document.getElementById("hero-terminal")!;
+  const reduitMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function ligneHTML(num: number, texte: string) {
+    const row = document.createElement("div");
+    row.className = "terminal-ligne";
+    const n = document.createElement("span");
+    n.className = "num";
+    n.textContent = String(num);
+    const code = document.createElement("span");
+    code.textContent = texte;
+    row.append(n, code);
+    return { row, code };
+  }
+
+  if (reduitMotion) {
+    lignes.forEach(({ num, texte }) => el.appendChild(ligneHTML(num, texte).row));
+  } else {
+    let i = 0;
+    function suivante() {
+      if (i >= lignes.length) return;
+      const { row, code } = ligneHTML(lignes[i].num, "");
+      el.appendChild(row);
+      const texte = lignes[i].texte;
+      let c = 0;
+      const curseur = document.createElement("span");
+      curseur.className = "curseur";
+      row.appendChild(curseur);
+      const interval = setInterval(() => {
+        code.textContent = texte.slice(0, c + 1);
+        c++;
+        if (c >= texte.length) {
+          clearInterval(interval);
+          curseur.remove();
+          i++;
+          setTimeout(suivante, 220);
+        }
+      }, 28);
+    }
+    suivante();
+  }
+</script>
