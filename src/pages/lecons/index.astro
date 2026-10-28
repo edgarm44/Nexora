@@ -36,15 +36,35 @@ const niveaux = [
 </Base>
 
 <script>
-  const niveau = localStorage.getItem("nexora_niveau");
-  if (niveau) {
-    const carte = document.querySelector(`.carte-niveau[data-niveau="${niveau}"]`);
-    if (carte) {
-      carte.classList.add("actif");
+  const TOTAUX_PAR_NIVEAU: Record<string, number> = { debutant: 4 };
+
+  function progres(niveauId: string): string[] {
+    try {
+      return JSON.parse(localStorage.getItem(`nexora_progres_${niveauId}`) ?? "[]");
+    } catch {
+      return [];
+    }
+  }
+
+  const niveauTrouve = localStorage.getItem("nexora_niveau");
+
+  document.querySelectorAll<HTMLElement>(".carte-niveau[data-niveau]").forEach((carte) => {
+    const id = carte.getAttribute("data-niveau")!;
+    const total = TOTAUX_PAR_NIVEAU[id];
+    const fait = total ? progres(id).length : 0;
+
+    if (id === niveauTrouve) carte.classList.add("actif");
+
+    if (total && fait > 0) {
+      const pastille = document.createElement("span");
+      pastille.className = "pastille";
+      pastille.textContent = fait >= total ? "terminé" : `${fait}/${total}`;
+      carte.appendChild(pastille);
+    } else if (id === niveauTrouve) {
       const pastille = document.createElement("span");
       pastille.className = "pastille";
       pastille.textContent = "ton niveau";
       carte.appendChild(pastille);
     }
-  }
+  });
 </script>

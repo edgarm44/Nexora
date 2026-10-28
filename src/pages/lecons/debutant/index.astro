@@ -7,9 +7,11 @@ const base = import.meta.env.BASE_URL;
   <h1>Afficher et ranger des valeurs</h1>
   <p class="lede">Quatre petites notions, chacune avec son exercice. Pas de pression : tu peux te tromper, réessayer, et avancer à ton rythme.</p>
 
+  <div class="carte" id="progres-banniere" style="display:none; margin-bottom: 1.5rem;"></div>
+
   <!-- Unité 1 -->
   <div class="unite" data-unite="u1">
-    <span class="commentaire">1 · afficher un texte</span>
+    <span class="unite-statut" data-statut="u1">✓ terminé</span>    <span class="commentaire">1 · afficher un texte</span>
     <h3>print() affiche quelque chose</h3>
     <p class="explication">
       La fonction <code>print()</code> affiche ce qu'on met entre les parenthèses. Si c'est du
@@ -37,7 +39,7 @@ const base = import.meta.env.BASE_URL;
 
   <!-- Unité 2 -->
   <div class="unite" data-unite="u2">
-    <span class="commentaire">2 · une variable, une boîte</span>
+    <span class="unite-statut" data-statut="u2">✓ terminé</span>    <span class="commentaire">2 · une variable, une boîte</span>
     <h3>Ranger une valeur pour la réutiliser</h3>
     <p class="explication">
       On range une valeur dans une variable avec le signe <code>=</code>. On peut ensuite la
@@ -64,7 +66,7 @@ const base = import.meta.env.BASE_URL;
 
   <!-- Unité 3 -->
   <div class="unite" data-unite="u3">
-    <span class="commentaire">3 · plusieurs valeurs dans un print</span>
+    <span class="unite-statut" data-statut="u3">✓ terminé</span>    <span class="commentaire">3 · plusieurs valeurs dans un print</span>
     <h3>print() peut afficher plusieurs choses à la fois</h3>
     <p class="explication">
       Avec une virgule, <code>print()</code> affiche plusieurs éléments à la suite, séparés par
@@ -88,7 +90,7 @@ const base = import.meta.env.BASE_URL;
 
   <!-- Unité 4 -->
   <div class="unite" data-unite="u4">
-    <span class="commentaire">4 · calculer avec des variables</span>
+    <span class="unite-statut" data-statut="u4">✓ terminé</span>    <span class="commentaire">4 · calculer avec des variables</span>
     <h3>Les variables peuvent contenir des nombres</h3>
     <p class="explication">
       Avec des nombres, les opérateurs habituels fonctionnent : <code>+</code>, <code>-</code>,
@@ -114,18 +116,82 @@ const base = import.meta.env.BASE_URL;
 </Base>
 
 <script>
+  const TOUTES_LES_UNITES = ["u1", "u2", "u3", "u4"];
+  const CLE_PROGRES = "nexora_progres_debutant";
+
+  function progresActuel(): string[] {
+    try {
+      return JSON.parse(localStorage.getItem(CLE_PROGRES) ?? "[]");
+    } catch {
+      return [];
+    }
+  }
+
+  function marquerTermine(uniteId: string) {
+    const fait = progresActuel();
+    if (!fait.includes(uniteId)) {
+      fait.push(uniteId);
+      localStorage.setItem(CLE_PROGRES, JSON.stringify(fait));
+    }
+    afficherBadge(uniteId);
+    rafraichirBanniere();
+  }
+
+  function afficherBadge(uniteId: string) {
+    const unite = document.querySelector(`[data-unite="${uniteId}"]`);
+    unite?.classList.add("termine");
+    unite?.querySelector(`[data-statut="${uniteId}"]`)?.classList.add("visible");
+  }
+
+  function rafraichirBanniere() {
+    const fait = progresActuel();
+    const banniere = document.getElementById("progres-banniere")!;
+    const total = TOUTES_LES_UNITES.length;
+    const n = fait.length;
+
+    if (n === 0) {
+      banniere.style.display = "none";
+      return;
+    }
+
+    banniere.style.display = "block";
+
+    if (n >= total) {
+      banniere.innerHTML = `
+        <span class="commentaire">bravo</span>
+        <p style="margin: 0; color: var(--ink-dim);">Les ${total} exercices de ce niveau sont faits. Le niveau suivant arrive bientôt.</p>
+      `;
+      return;
+    }
+
+    const prochaine = TOUTES_LES_UNITES.find((id) => !fait.includes(id));
+    banniere.innerHTML = `
+      <span class="commentaire">ta progression</span>
+      <p style="margin: 0 0 0.3rem; color: var(--ink-dim);">${n} exercice${n > 1 ? "s" : ""} sur ${total} terminé${n > 1 ? "s" : ""}.</p>
+      <div class="progres-barre"><span style="width: ${(n / total) * 100}%"></span></div>
+      <div class="actions" style="margin-top: 1rem;">
+        <button class="btn-ghost" id="reprendre" type="button">Reprendre où j'en étais</button>
+      </div>
+    `;
+    document.getElementById("reprendre")?.addEventListener("click", () => {
+      document.querySelector(`[data-unite="${prochaine}"]`)?.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+  }
+
   function normaliser(s: string) {
     return s.trim().replace(/\s+/g, " ").replace(/'/g, '"');
   }
 
   // QCM (unités 1 et 3) : un seul bouton correct, repéré par data-ok
   document.querySelectorAll<HTMLElement>("[data-qcm]").forEach((groupe) => {
+    const uniteId = groupe.closest("[data-unite]")?.getAttribute("data-unite") ?? "";
     const boutons = groupe.querySelectorAll<HTMLButtonElement>(".option");
     boutons.forEach((btn) => {
       btn.addEventListener("click", () => {
         boutons.forEach((b) => (b.disabled = true));
         if (btn.hasAttribute("data-ok")) {
           btn.classList.add("bonne");
+          marquerTermine(uniteId);
         } else {
           btn.classList.add("mauvaise");
           boutons.forEach((b) => { if (b.hasAttribute("data-ok")) b.classList.add("bonne"); });
@@ -141,8 +207,9 @@ const base = import.meta.env.BASE_URL;
     const retour = u2.querySelector("[data-retour]") as HTMLElement;
     const val = normaliser(input.value);
     if (val === '"Bonjour Nexora"') {
-      retour.textContent = "C'est exact.";
+      retour.textContent = "C\'est exact.";
       retour.className = "retour ok";
+      marquerTermine("u2");
     } else {
       retour.textContent = 'Pas tout à fait : il faut le texte exact entre guillemets, par exemple "Bonjour Nexora".';
       retour.className = "retour ko";
@@ -159,9 +226,14 @@ const base = import.meta.env.BASE_URL;
     if (u4Valide.test(val)) {
       retour.textContent = "Exactement ça.";
       retour.className = "retour ok";
+      marquerTermine("u4");
     } else {
       retour.textContent = "Essaie encore : le nom de la variable, le signe =, puis le calcul ou le résultat.";
       retour.className = "retour ko";
     }
   });
+
+  // au chargement : ré-afficher ce qui est déjà fait
+  progresActuel().forEach(afficherBadge);
+  rafraichirBanniere();
 </script>

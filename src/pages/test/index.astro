@@ -179,17 +179,26 @@ import Base from "../../layouts/Base.astro";
     renderResult();
   }
 
-  function renderResult() {
+  function renderResult(dejaEnregistre = false) {
     progress.innerHTML = "";
     const label = NIVEAUX.find((n) => n.id === niveauAtteint)?.label ?? "Débutant";
     body.innerHTML = `
       <div class="resultat">
-        <span class="commentaire">résultat</span>
+        <span class="commentaire">${dejaEnregistre ? "déjà fait" : "résultat"}</span>
         <h2>Ton niveau de départ : <span class="niveau-mot">${label}</span></h2>
-        <p style="color: var(--ink-dim);">On a préparé des exercices adaptés à ce niveau. Tu pourras toujours en changer plus tard.</p>
-        <div class="actions"><a class="btn" href="${base}lecons/">Voir mes exercices</a></div>
+        <p style="color: var(--ink-dim);">${dejaEnregistre ? "Tu as déjà passé ce test." : "On a préparé des exercices adaptés à ce niveau."} Direction tes exercices.</p>
+        <div class="actions">
+          <a class="btn" href="${base}lecons/">Voir mes exercices</a>
+          <button class="btn-ghost" id="refaire-test" type="button">Refaire le test</button>
+        </div>
       </div>
     `;
+    document.getElementById("refaire-test")!.addEventListener("click", () => {
+      localStorage.removeItem("nexora_niveau");
+      current = 0;
+      renderProgress();
+      renderStep();
+    });
   }
 
   function renderGate() {
@@ -291,6 +300,12 @@ import Base from "../../layouts/Base.astro";
     else renderQuestion(step.niveauIndex, step.questionIndex);
   }
 
-  renderProgress();
-  renderStep();
+  const niveauDejaEnregistre = localStorage.getItem("nexora_niveau") as Niveau | null;
+  if (niveauDejaEnregistre) {
+    niveauAtteint = niveauDejaEnregistre;
+    renderResult(true);
+  } else {
+    renderProgress();
+    renderStep();
+  }
 </script>
