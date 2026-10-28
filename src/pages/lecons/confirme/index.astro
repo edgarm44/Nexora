@@ -3,8 +3,8 @@ import Base from "../../../layouts/Base.astro";
 ---
 <Base title="Nexora — Confirmé">
   <span class="commentaire">confirmé</span>
-  <h1>Fonctions et listes</h1>
-  <p class="lede">Ici, tu écris du vrai code dans un terminal qui l'exécute pour de vrai. Prends ton temps.</p>
+  <h1>Fonctions, listes et dictionnaires</h1>
+  <p class="lede">Huit notions. Plusieurs se font dans un terminal qui exécute vraiment ton code.</p>
 
   <div class="carte" id="exo-card">
     <div class="progression" id="exo-progress"></div>
@@ -14,38 +14,14 @@ import Base from "../../../layouts/Base.astro";
 
 <script is:inline src="https://cdn.jsdelivr.net/pyodide/v0.27.6/full/pyodide.js"></script>
 <script>
-  declare global {
-    interface Window {
-      loadPyodide: (opts?: any) => Promise<any>;
-    }
-  }
-
-  type TypeExercice = "qcm" | "completer" | "ecrire" | "code";
-
-  interface Unite {
-    id: string;
-    titre: string;
-    explication: string;
-    exemple: string[];
-    consigne: string;
-    code?: string[];
-    type: TypeExercice;
-    options?: string[];
-    bonneOption?: number;
-    reponsesValides?: RegExp;
-    placeholder?: string;
-    indiceErreur?: string;
-    codeDepart?: string;
-    sortieAttendue?: RegExp;
-    indiceCode?: string;
-  }
+  import { initExercices, type Unite } from "../../../lib/exercices";
 
   const UNITES: Unite[] = [
     {
       id: "u1",
       titre: "Une fonction, une machine réutilisable",
       explication:
-        "def donne un nom à un bloc de code. return renvoie un résultat à qui a appelé la fonction, sans l'afficher directement.",
+        "def donne un nom à un bloc de code. return renvoie un résultat à qui a appelé la fonction, sans l'afficher directement — il faut un print() séparé si on veut le voir à l'écran.",
       exemple: ["def carre(n):\n    return n * n", "print(carre(4))"],
       consigne: "Que renvoie l'appel double(5) ?",
       code: ["def double(n):\n    return n * 2"],
@@ -58,8 +34,8 @@ import Base from "../../../layouts/Base.astro";
       titre: "Écrire sa première fonction, dans un vrai terminal",
       explication:
         "Ici, le code que tu écris est vraiment exécuté par Python, dans ton navigateur. Complète la fonction puis appuie sur Exécuter.",
-      exemple: ["def saluer(nom):\n    return \"Bonjour \" + nom"],
-      consigne: 'Complète la fonction triple pour qu\'elle renvoie n multiplié par 3, puis affiche triple(4) avec print().',
+      exemple: ['def saluer(nom):\n    return "Bonjour " + nom'],
+      consigne: "Complète la fonction triple pour qu'elle renvoie n multiplié par 3, puis affiche triple(4) avec print().",
       type: "code",
       codeDepart: "def triple(n):\n    return ____\n\nprint(triple(4))",
       sortieAttendue: /^12$/,
@@ -69,10 +45,10 @@ import Base from "../../../layouts/Base.astro";
       id: "u3",
       titre: "Une liste range plusieurs valeurs",
       explication:
-        "Une liste se note entre crochets [ ]. Le premier élément est à l'indice 0, le deuxième à l'indice 1, et ainsi de suite.",
+        "Une liste se note entre crochets [ ]. Le premier élément est à l'indice 0, le deuxième à l'indice 1, et ainsi de suite — c'est la même logique que range() vue au niveau précédent.",
       exemple: ['fruits = ["pomme", "poire", "kiwi"]', "print(fruits[1])"],
       consigne: "Que va afficher ce programme ?",
-      code: ['notes = [12, 15, 8, 17]', "print(notes[2])"],
+      code: ["notes = [12, 15, 8, 17]", "print(notes[2])"],
       type: "qcm",
       options: ["12", "15", "8", "17"],
       bonneOption: 2,
@@ -81,8 +57,8 @@ import Base from "../../../layouts/Base.astro";
       id: "u4",
       titre: "Parcourir une liste avec une boucle",
       explication:
-        "On peut combiner for et une liste pour traiter chaque élément, un par un, sans avoir besoin de connaître sa position.",
-      exemple: ["for fruit in [\"pomme\", \"poire\"]:\n    print(fruit)"],
+        "On peut combiner for et une liste pour traiter chaque élément un par un, sans avoir besoin de connaître sa position — contrairement à range(), qui donne des positions.",
+      exemple: ['for fruit in ["pomme", "poire"]:\n    print(fruit)'],
       consigne: "Écris dans le terminal une boucle qui affiche chaque nombre de la liste [2, 4, 6] avec print().",
       type: "code",
       codeDepart: "nombres = [2, 4, 6]\n____________",
@@ -93,262 +69,66 @@ import Base from "../../../layouts/Base.astro";
       id: "u5",
       titre: "Un dictionnaire associe une clé à une valeur",
       explication:
-        "Un dictionnaire se note entre accolades { }. Chaque valeur a un nom (la clé) plutôt qu'une simple position.",
+        "Un dictionnaire se note entre accolades { }. Chaque valeur a un nom (la clé) plutôt qu'une simple position, ce qui rend le code plus lisible qu'une liste quand les données ont un sens précis.",
       exemple: ['eleve = {"nom": "Léa", "age": 13}', 'print(eleve["age"])'],
-      consigne: "Complète pour accéder à la valeur associée à la clé \"ville\".",
+      consigne: 'Complète pour accéder à la valeur associée à la clé "ville".',
       code: ['infos = {"ville": "Lyon", "pays": "France"}', "print(infos[____________])"],
       type: "completer",
       reponsesValides: /^"ville"$/,
       placeholder: '"ville"',
       indiceErreur: 'Il faut le nom exact de la clé, entre guillemets : "ville".',
     },
+    {
+      id: "u6",
+      titre: "Faire grandir une liste avec .append()",
+      explication:
+        "Une liste peut grandir après sa création. .append(valeur) ajoute un élément à la fin de la liste — pratique pour construire une liste au fil d'un programme plutôt que tout écrire d'un coup.",
+      exemple: ['fruits = ["pomme"]\nfruits.append("poire")\nprint(fruits)'],
+      consigne: "Crée une liste vide notes = [], ajoute 12 puis 15 avec .append(), puis affiche la liste.",
+      type: "code",
+      codeDepart: "notes = []\n____________\nprint(notes)",
+      sortieAttendue: /^\[12,\s*15\]$/,
+      indiceCode: "Deux lignes : notes.append(12) puis notes.append(15), avant le print(notes).",
+    },
+    {
+      id: "u7",
+      titre: "Le texte a aussi ses outils",
+      explication:
+        "len() donne la longueur d'un texte ou d'une liste. .upper() met en majuscules, .lower() en minuscules. Ce sont des méthodes : elles se collent après la valeur avec un point.",
+      exemple: ['mot = "bonjour"\nprint(len(mot))\nprint(mot.upper())'],
+      consigne: "Que va afficher ce programme ?",
+      code: ['prenom = "Léa"\nprint(prenom.upper())'],
+      type: "qcm",
+      options: ["Léa", "LÉA", "léa", "Une erreur"],
+      bonneOption: 1,
+    },
+    {
+      id: "u8",
+      titre: "Parcourir un dictionnaire",
+      explication:
+        "Un dictionnaire se parcourt aussi avec for, en utilisant .items() pour récupérer à la fois la clé et la valeur à chaque tour.",
+      exemple: ['eleve = {"nom": "Léa", "age": 13}\nfor cle, valeur in eleve.items():\n    print(cle, valeur)'],
+      consigne: "Que va afficher ce programme ?",
+      code: ['notes = {"maths": 15, "svt": 12}\nfor matiere, note in notes.items():\n    print(matiere, note)'],
+      type: "qcm",
+      options: [
+        "Chaque matière suivie de sa note, une ligne par matière",
+        "Seulement les noms des matières",
+        "Seulement les notes",
+        "Une erreur, .items() n'existe pas",
+      ],
+      bonneOption: 0,
+    },
   ];
 
-  const base = import.meta.env.BASE_URL;
-  const body = document.getElementById("exo-body")!;
-  const progress = document.getElementById("exo-progress")!;
-  const CLE_PROGRES = "nexora_progres_confirme";
-
-  let current = 0;
-  let pyodideInstance: any = null;
-  let pyodideChargement: Promise<any> | null = null;
-
-  function chargerPyodide() {
-    if (!pyodideChargement) {
-      pyodideChargement = window.loadPyodide().then((p: any) => {
-        pyodideInstance = p;
-        return p;
-      });
-    }
-    return pyodideChargement;
-  }
-
-  function progresActuel(): string[] {
-    try {
-      return JSON.parse(localStorage.getItem(CLE_PROGRES) ?? "[]");
-    } catch {
-      return [];
-    }
-  }
-
-  function marquerTermine(id: string) {
-    const fait = progresActuel();
-    if (!fait.includes(id)) {
-      fait.push(id);
-      localStorage.setItem(CLE_PROGRES, JSON.stringify(fait));
-    }
-  }
-
-  function renderProgress() {
-    progress.innerHTML = "";
-    for (let i = 0; i < UNITES.length; i++) {
-      const span = document.createElement("span");
-      if (i < current) span.className = "fait";
-      else if (i === current) span.className = "courant";
-      progress.appendChild(span);
-    }
-  }
-
-  function blocCode(blocs: string[]) {
-    return blocs
-      .map((bloc) => {
-        const lignes = bloc.split("\n");
-        return `
-          <div class="terminal" style="margin-bottom: 1.25rem;">
-            <div class="terminal-barre"><span>python</span></div>
-            <div class="terminal-corps">
-              ${lignes
-                .map(
-                  (l, i) =>
-                    `<div class="terminal-ligne"><span class="num">${i + 1}</span><span>${l.replace(/</g, "&lt;")}</span></div>`
-                )
-                .join("")}
-            </div>
-          </div>
-        `;
-      })
-      .join("");
-  }
-
-  function avancer() {
-    current++;
-    if (current >= UNITES.length) {
-      renderFin();
-    } else {
-      renderProgress();
-      renderUnite(UNITES[current]);
-    }
-  }
-
-  function renderFin() {
-    progress.innerHTML = "";
-    body.innerHTML = `
-      <div class="resultat">
-        <span class="commentaire">bravo</span>
-        <h2>Niveau confirmé terminé</h2>
-        <p style="color: var(--ink-dim);">Les cinq exercices sont faits. Le niveau suivant arrive bientôt.</p>
-        <div class="actions"><a class="btn" href="${base}lecons/">Retour aux niveaux</a></div>
-      </div>
-    `;
-  }
-
-  function renderUnite(u: Unite) {
-    body.innerHTML = `
-      <span class="commentaire">${current + 1} sur ${UNITES.length} · ${u.titre}</span>
-      <p class="explication" style="margin-top: 0.4rem;">${u.explication}</p>
-      ${blocCode(u.exemple)}
-      <p class="consigne">${u.consigne}</p>
-      ${u.code ? blocCode(u.code) : ""}
-      <div id="zone-exercice"></div>
-      <div id="zone-suite"></div>
-    `;
-
-    const zone = document.getElementById("zone-exercice")!;
-    const suite = document.getElementById("zone-suite")!;
-
-    function proposerSuite(reussi: boolean) {
-      if (reussi) marquerTermine(u.id);
-      suite.innerHTML = `
-        <div class="actions" style="margin-top: 1.25rem;">
-          <button class="btn" id="btn-suivant" type="button">${current === UNITES.length - 1 ? "Terminer" : "Exercice suivant"}</button>
-        </div>
-      `;
-      document.getElementById("btn-suivant")!.addEventListener("click", avancer);
-    }
-
-    if (u.type === "qcm") {
-      zone.innerHTML = `
-        <div class="options">
-          ${u.options!.map((opt, i) => `<button class="option" data-index="${i}">${opt}</button>`).join("")}
-        </div>
-      `;
-      const boutons = zone.querySelectorAll<HTMLButtonElement>(".option");
-      boutons.forEach((btn) => {
-        btn.addEventListener("click", () => {
-          const choisi = Number(btn.dataset.index);
-          boutons.forEach((b) => (b.disabled = true));
-          const correct = choisi === u.bonneOption;
-          if (correct) {
-            btn.classList.add("bonne");
-          } else {
-            btn.classList.add("mauvaise");
-            boutons[u.bonneOption!].classList.add("bonne");
-          }
-          proposerSuite(correct);
-        });
-      });
-    } else if (u.type === "completer" || u.type === "ecrire") {
-      zone.innerHTML = `
-        <input class="champ-reponse" id="champ" type="text" placeholder="${u.placeholder ?? ""}" autocomplete="off" />
-        <div class="actions" style="margin-top: 0.9rem;"><button class="btn-ghost" id="btn-verifier" type="button">Vérifier</button></div>
-        <p class="retour" id="retour"></p>
-      `;
-      const champ = document.getElementById("champ") as HTMLInputElement;
-      const retour = document.getElementById("retour")!;
-
-      function verifier() {
-        const val = champ.value.trim().replace(/\s+/g, " ").replace(/'/g, '"');
-        const ok = u.reponsesValides!.test(val);
-        if (ok) {
-          retour.textContent = "C'est exact.";
-          retour.className = "retour ok";
-          champ.disabled = true;
-          document.getElementById("btn-verifier")!.setAttribute("disabled", "true");
-          proposerSuite(true);
-        } else {
-          retour.textContent = u.indiceErreur ?? "Essaie encore.";
-          retour.className = "retour ko";
-        }
-      }
-
-      document.getElementById("btn-verifier")!.addEventListener("click", verifier);
-      champ.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") verifier();
-      });
-    } else if (u.type === "code") {
-      zone.innerHTML = `
-        <div class="terminal terminal-editable">
-          <div class="terminal-barre">
-            <span>python — modifiable</span>
-            <span class="pyodide-statut" id="statut-pyodide">chargement de Python…</span>
-          </div>
-          <div class="terminal-corps">
-            <textarea id="zone-code" spellcheck="false">${u.codeDepart ?? ""}</textarea>
-          </div>
-          <div class="terminal-run-barre">
-            <button class="btn-run" id="btn-run" type="button" disabled>▶ Exécuter</button>
-          </div>
-          <div class="terminal-sortie vide" id="sortie"></div>
-        </div>
-      `;
-
-      const textarea = document.getElementById("zone-code") as HTMLTextAreaElement;
-      const btnRun = document.getElementById("btn-run") as HTMLButtonElement;
-      const sortie = document.getElementById("sortie")!;
-      const statut = document.getElementById("statut-pyodide")!;
-
-      chargerPyodide()
-        .then(() => {
-          statut.textContent = "prêt";
-          btnRun.disabled = false;
-        })
-        .catch(() => {
-          statut.textContent = "indisponible";
-          sortie.textContent = "Impossible de charger Python dans le navigateur pour l'instant. Réessaie dans un instant, ou vérifie ta connexion.";
-          sortie.className = "terminal-sortie erreur";
-        });
-
-      btnRun.addEventListener("click", async () => {
-        if (!pyodideInstance) return;
-        btnRun.disabled = true;
-        btnRun.textContent = "Exécution…";
-        sortie.className = "terminal-sortie";
-        sortie.textContent = "";
-
-        try {
-          pyodideInstance.setStdout({
-            batched: (s: string) => {
-              sortie.textContent += (sortie.textContent ? "\n" : "") + s;
-            },
-          });
-          await pyodideInstance.runPythonAsync(textarea.value);
-          const texteSortie = sortie.textContent.trim();
-          sortie.classList.toggle("vide", texteSortie.length === 0);
-
-          const correct = u.sortieAttendue ? u.sortieAttendue.test(texteSortie) : true;
-          if (correct) {
-            sortie.classList.add("ok");
-            suite.innerHTML = `
-              <p class="retour ok" style="margin-top: 1rem;">Exactement le résultat attendu.</p>
-              <div class="actions" style="margin-top: 0.5rem;">
-                <button class="btn" id="btn-suivant" type="button">${current === UNITES.length - 1 ? "Terminer" : "Exercice suivant"}</button>
-              </div>
-            `;
-            marquerTermine(u.id);
-            document.getElementById("btn-suivant")!.addEventListener("click", avancer);
-          } else {
-            suite.innerHTML = `<p class="retour ko" style="margin-top: 1rem;">${u.indiceCode ?? "Ce n'est pas encore le résultat attendu."}</p>`;
-          }
-        } catch (err: any) {
-          sortie.className = "terminal-sortie erreur";
-          sortie.textContent = String(err?.message ?? err).split("\n").pop() ?? "Erreur";
-          suite.innerHTML = `<p class="retour ko" style="margin-top: 1rem;">Il y a une erreur dans le code. Relis le message ci-dessus et corrige-le.</p>`;
-        } finally {
-          btnRun.disabled = false;
-          btnRun.textContent = "▶ Exécuter";
-        }
-      });
-    }
-  }
-
-  const fait = progresActuel();
-  const premierNonFait = UNITES.findIndex((u) => !fait.includes(u.id));
-  current = premierNonFait === -1 ? UNITES.length : premierNonFait;
-
-  if (current >= UNITES.length) {
-    renderFin();
-  } else {
-    renderProgress();
-    renderUnite(UNITES[current]);
-  }
+  initExercices({
+    unites: UNITES,
+    cleProgres: "nexora_progres_confirme",
+    corpsId: "exo-body",
+    progressionId: "exo-progress",
+    base: import.meta.env.BASE_URL,
+    titreFin: "Niveau confirmé terminé",
+    texteFin: "Les huit exercices sont faits. Le niveau expert vient de se débloquer.",
+    retourHref: `${import.meta.env.BASE_URL}lecons/`,
+  });
 </script>

@@ -1,0 +1,119 @@
+---
+import Base from "../../../layouts/Base.astro";
+---
+<Base title="Nexora — Web">
+  <span class="commentaire">web</span>
+  <h1>Construire une page</h1>
+  <p class="lede">Ici, pas de Python : tu écris du HTML, et tu vois le résultat s'afficher en direct, comme dans un vrai navigateur.</p>
+
+  <div class="carte" id="exo-card">
+    <div class="progression" id="exo-progress"></div>
+    <div id="exo-body"></div>
+  </div>
+</Base>
+
+<script>
+  import { initExercices, type Unite } from "../../../lib/exercices";
+
+  const UNITES: Unite[] = [
+    {
+      id: "u1",
+      titre: "La structure d'une page HTML",
+      explication:
+        "Une page HTML commence par <html>, qui contient <head> (les informations techniques, invisibles) et <body> (tout ce qui s'affiche à l'écran). Toutes les balises visibles — titres, paragraphes, images — vont dans <body>.",
+      exemple: ["<html>\n  <head>\n    <title>Mon site</title>\n  </head>\n  <body>\n    <h1>Bonjour</h1>\n  </body>\n</html>"],
+      consigne: "Quel élément contient le texte et les images qui s'affichent réellement sur la page ?",
+      type: "qcm",
+      options: ["<head>", "<body>", "<title>", "<html>"],
+      bonneOption: 1,
+    },
+    {
+      id: "u2",
+      titre: "Titre et paragraphe, pour de vrai",
+      explication:
+        "<h1> affiche un titre principal, <p> affiche un paragraphe de texte. L'aperçu en dessous se met à jour à chaque frappe : essaie, tu verras tout de suite le résultat.",
+      exemple: ["<h1>Nexora</h1>\n<p>Apprendre à coder.</p>"],
+      consigne: 'Dans l\'aperçu, écris un titre principal "Mon site" et, juste en dessous, un paragraphe "Bienvenue".',
+      type: "html",
+      codeDepart: "<h1></h1>\n<p></p>",
+      regexHtml: /<h1>\s*Mon site\s*<\/h1>[\s\S]*<p>\s*Bienvenue\s*<\/p>/i,
+      indiceHtml: 'Mets "Mon site" entre <h1> et </h1>, puis "Bienvenue" entre <p> et </p>, dans cet ordre.',
+    },
+    {
+      id: "u3",
+      titre: "Un lien avec <a>",
+      explication:
+        "<a> crée un lien cliquable. L'adresse de destination se met dans l'attribut href, entre guillemets, et le texte cliquable se place entre <a> et </a>.",
+      exemple: ['<a href="https://python.org">Le site de Python</a>'],
+      consigne: "Complète pour créer un lien vers https://example.com avec le texte Clique ici.",
+      code: ['<a href="____________">Clique ici</a>'],
+      type: "completer",
+      reponsesValides: /^"https:\/\/example\.com"$/,
+      placeholder: '"https://example.com"',
+      indiceErreur: 'Mets l\'adresse exacte entre guillemets : "https://example.com".',
+    },
+    {
+      id: "u4",
+      titre: "Des listes avec <ul> et <li>",
+      explication:
+        "<ul> (unordered list) crée une liste à puces. Chaque élément de la liste est une balise <li> (list item), placée à l'intérieur.",
+      exemple: ["<ul>\n  <li>Pomme</li>\n  <li>Poire</li>\n</ul>"],
+      consigne: "Que produit ce code ?",
+      code: ["<ul>\n  <li>Un</li>\n  <li>Deux</li>\n</ul>"],
+      type: "qcm",
+      options: ["Une liste à puces avec Un et Deux", "Un tableau", "Un lien", "Une erreur"],
+      bonneOption: 0,
+    },
+    {
+      id: "u5",
+      titre: "Une image avec <img>",
+      explication:
+        "<img> affiche une image. src indique où la trouver, alt décrit l'image en texte — utile si elle ne se charge pas, et indispensable pour les personnes qui utilisent un lecteur d'écran.",
+      exemple: ['<img src="chat.jpg" alt="Un chat gris assis">'],
+      consigne: "Quel attribut de <img> décrit l'image pour les personnes qui ne peuvent pas la voir ?",
+      type: "qcm",
+      options: ["src", "alt", "title", "href"],
+      bonneOption: 1,
+    },
+    {
+      id: "u6",
+      titre: "Relier une page à un fichier CSS",
+      explication:
+        "Le CSS, vu au niveau précédent, se range en général dans un fichier séparé (par exemple styles.css). Pour l'appliquer, on le relie depuis le <head> de la page HTML avec une balise <link>.",
+      exemple: ['<head>\n  <link rel="stylesheet" href="styles.css">\n</head>'],
+      consigne: "Comment relier une page HTML à un fichier styles.css ?",
+      type: "qcm",
+      options: [
+        '<style src="styles.css">',
+        '<link rel="stylesheet" href="styles.css">',
+        '<css href="styles.css">',
+        '<script src="styles.css">',
+      ],
+      bonneOption: 1,
+    },
+    {
+      id: "u7",
+      titre: "Une mini page, de A à Z",
+      explication:
+        "Dernier exercice du niveau : combine tout ce que tu viens de voir dans une seule page.",
+      exemple: ["<h1>Titre</h1>\n<p>Texte</p>\n<a href=\"...\">Lien</a>"],
+      consigne:
+        'Construis une mini page : un titre <h1>Nexora</h1>, un paragraphe <p> qui te présente en une phrase, et un lien <a> avec le texte "En savoir plus".',
+      type: "html",
+      codeDepart: "<h1></h1>\n<p></p>\n<a href=\"\"></a>",
+      regexHtml: /<h1>\s*Nexora\s*<\/h1>[\s\S]*<p>[^<]+<\/p>[\s\S]*<a\s+href="[^"]+">\s*En savoir plus\s*<\/a>/i,
+      indiceHtml: 'Vérifie les trois éléments dans l\'ordre : <h1>Nexora</h1>, un <p> non vide, puis <a href="...">En savoir plus</a>.',
+    },
+  ];
+
+  initExercices({
+    unites: UNITES,
+    cleProgres: "nexora_progres_web",
+    corpsId: "exo-body",
+    progressionId: "exo-progress",
+    base: import.meta.env.BASE_URL,
+    titreFin: "Niveau Web terminé",
+    texteFin: "Tu sais maintenant construire une page HTML simple. La suite du parcours arrive bientôt.",
+    retourHref: `${import.meta.env.BASE_URL}lecons/`,
+  });
+</script>
