@@ -5,7 +5,37 @@ import Base from "../../layouts/Base.astro";
   <span class="tag">Parcours</span>
   <h1>Leçons</h1>
   <p>Des séances de 5 à 10 minutes, du premier print() jusqu'au site publié.</p>
-  <div class="card">
-    <p style="color: var(--fg-dim); margin: 0;">À construire : la liste des séances arrive bientôt ici.</p>
+
+  <div id="niveaux">
+    <div class="niveau-card" data-niveau="debutant">
+      <h3>Débutant</h3>
+      <p>Variables, types, premiers affichages. À construire.</p>
+    </div>
+    <div class="niveau-card" data-niveau="intermediaire">
+      <h3>Intermédiaire</h3>
+      <p>Conditions, boucles, logique de base. À construire.</p>
+    </div>
+    <div class="niveau-card" data-niveau="confirme">
+      <h3>Confirmé</h3>
+      <p>Fonctions, listes, dictionnaires, fichiers. À construire.</p>
+    </div>
+    <div class="niveau-card" data-niveau="expert">
+      <h3>Expert</h3>
+      <p>Classes, exceptions, modules, puis HTML/CSS et site statique. À construire.</p>
+    </div>
   </div>
 </Base>
+
+<script>
+  const niveau = localStorage.getItem("nexora_niveau");
+  if (niveau) {
+    const card = document.querySelector(`.niveau-card[data-niveau="${niveau}"]`);
+    if (card) {
+      card.classList.add("actif");
+      const badge = document.createElement("span");
+      badge.className = "badge-niveau";
+      badge.textContent = "Ton niveau";
+      card.appendChild(badge);
+    }
+  }
+</script>

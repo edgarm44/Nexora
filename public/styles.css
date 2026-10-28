@@ -168,3 +168,97 @@ main > p {
   border-radius: 999px;
   margin-bottom: 0.75rem;
 }
+
+/* quiz */
+.quiz-progress {
+  display: flex;
+  gap: 0.4rem;
+  margin: 1.5rem 0 0;
+}
+.quiz-progress span {
+  height: 6px;
+  flex: 1;
+  border-radius: 999px;
+  background: var(--border);
+  transition: background 0.2s ease;
+}
+.quiz-progress span.done { background: var(--py-blue); }
+.quiz-progress span.current { background: var(--py-yellow); }
+
+.quiz-question {
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin: 0 0 1rem;
+}
+
+.quiz-code {
+  background: #0b0f19;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem 1.2rem;
+  font-family: "Cascadia Code", "Fira Code", ui-monospace, monospace;
+  font-size: 0.95rem;
+  color: #d7deef;
+  margin: 0 0 1.25rem;
+  overflow-x: auto;
+  white-space: pre;
+}
+
+.quiz-options {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.quiz-option {
+  text-align: left;
+  width: 100%;
+  padding: 0.85rem 1.1rem;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--bg-soft);
+  color: var(--fg);
+  font-size: 1rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.quiz-option:hover { border-color: var(--py-blue); }
+.quiz-option.correct { border-color: #4caf6d; background: rgba(76, 175, 109, 0.12); }
+.quiz-option.wrong { border-color: #e2584a; background: rgba(226, 88, 74, 0.12); }
+.quiz-option:disabled { cursor: default; }
+
+.quiz-result h2 {
+  margin: 0 0 0.4rem;
+  font-size: 1.6rem;
+}
+.quiz-result .niveau {
+  display: inline-block;
+  font-weight: 700;
+  color: var(--py-yellow);
+}
+
+/* leçons */
+.niveau-card {
+  position: relative;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem 1.75rem;
+  margin-top: 1rem;
+}
+.niveau-card.actif { border-color: var(--py-yellow); box-shadow: 0 0 0 1px rgba(255, 212, 59, 0.25); }
+.niveau-card h3 { margin: 0 0 0.3rem; font-size: 1.15rem; }
+.niveau-card p { margin: 0; color: var(--fg-dim); font-size: 0.95rem; }
+.badge-niveau {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.5rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #0b0f19;
+  background: var(--py-yellow);
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+}

@@ -4,8 +4,236 @@ import Base from "../../layouts/Base.astro";
 <Base title="Nexora — Test de positionnement">
   <span class="tag">Étape 1</span>
   <h1>Test de positionnement</h1>
-  <p>Quelques questions pour trouver ton point de départ idéal.</p>
-  <div class="card">
-    <p style="color: var(--fg-dim); margin: 0;">À construire : les questions du test arrivent bientôt ici.</p>
+  <p>Quelques questions pour trouver ton point de départ. Réponds du mieux que tu peux, il n'y a rien à préparer.</p>
+
+  <div class="card" id="quiz-card">
+    <div class="quiz-progress" id="quiz-progress"></div>
+    <div id="quiz-body"></div>
   </div>
 </Base>
+
+<script>
+  type Niveau = "debutant" | "intermediaire" | "confirme" | "expert";
+
+  interface Question {
+    enonce: string;
+    code?: string;
+    options: string[];
+    bonne: number;
+  }
+
+  const NIVEAUX: { id: Niveau; label: string; questions: Question[] }[] = [
+    {
+      id: "debutant",
+      label: "Débutant",
+      questions: [
+        {
+          enonce: "Que va afficher ce programme ?",
+          code: 'print("Bonjour")',
+          options: ["Bonjour", '"Bonjour"', "Une erreur", "Rien"],
+          bonne: 0,
+        },
+        {
+          enonce: "Après ces deux lignes, que vaut x ?",
+          code: "x = 3\nx = x + 2",
+          options: ["3", "2", "5", "Une erreur"],
+          bonne: 2,
+        },
+      ],
+    },
+    {
+      id: "intermediaire",
+      label: "Intermédiaire",
+      questions: [
+        {
+          enonce: "Que va afficher ce programme ?",
+          code: "for i in range(3):\n    print(i)",
+          options: ["0 1 2", "1 2 3", "3", "0 1 2 3"],
+          bonne: 0,
+        },
+        {
+          enonce: "Que va afficher ce programme ?",
+          code: 'x = 7\nif x > 5:\n    print("grand")\nelse:\n    print("petit")',
+          options: ["grand", "petit", "Une erreur", "Rien"],
+          bonne: 0,
+        },
+      ],
+    },
+    {
+      id: "confirme",
+      label: "Confirmé",
+      questions: [
+        {
+          enonce: "Que renvoie carre(4) ?",
+          code: "def carre(n):\n    return n * n",
+          options: ["8", "16", "4", "Une erreur"],
+          bonne: 1,
+        },
+        {
+          enonce: "Que va afficher ce programme ?",
+          code: 'fruits = ["pomme", "poire", "kiwi"]\nprint(fruits[1])',
+          options: ["pomme", "poire", "kiwi", "Une erreur"],
+          bonne: 1,
+        },
+      ],
+    },
+    {
+      id: "expert",
+      label: "Expert",
+      questions: [
+        {
+          enonce: "Quel mot-clé permet de capturer une exception en Python ?",
+          options: ["catch", "except", "rescue", "error"],
+          bonne: 1,
+        },
+        {
+          enonce: "Que fait la ligne import math ?",
+          options: [
+            "Elle importe le module math pour utiliser ses fonctions",
+            "Elle crée une variable nommée math",
+            "Elle supprime le module math",
+            "Elle affiche la documentation de Python",
+          ],
+          bonne: 0,
+        },
+      ],
+    },
+  ];
+
+  const base = import.meta.env.BASE_URL;
+  const body = document.getElementById("quiz-body")!;
+  const progress = document.getElementById("quiz-progress")!;
+
+  // Déroulé : question de départ, puis deux questions par niveau tant que c'est correct.
+  type Step =
+    | { kind: "gate" }
+    | { kind: "question"; niveauIndex: number; questionIndex: number };
+
+  const steps: Step[] = [{ kind: "gate" }];
+  for (let n = 0; n < NIVEAUX.length; n++) {
+    for (let q = 0; q < NIVEAUX[n].questions.length; q++) {
+      steps.push({ kind: "question", niveauIndex: n, questionIndex: q });
+    }
+  }
+
+  let current = 0;
+  let niveauAtteint: Niveau = "debutant";
+
+  function renderProgress() {
+    progress.innerHTML = "";
+    for (let i = 0; i < steps.length; i++) {
+      const span = document.createElement("span");
+      if (i < current) span.className = "done";
+      else if (i === current) span.className = "current";
+      progress.appendChild(span);
+    }
+  }
+
+  function finirAu(niveau: Niveau) {
+    niveauAtteint = niveau;
+    localStorage.setItem("nexora_niveau", niveau);
+    renderResult();
+  }
+
+  function renderResult() {
+    progress.innerHTML = "";
+    const label = NIVEAUX.find((n) => n.id === niveauAtteint)?.label ?? "Débutant";
+    body.innerHTML = `
+      <div class="quiz-result">
+        <span class="tag">Résultat</span>
+        <h2>Ton niveau de départ : <span class="niveau">${label}</span></h2>
+        <p style="color: var(--fg-dim);">On a préparé des leçons courtes adaptées à ce niveau. Tu pourras toujours changer de niveau plus tard.</p>
+        <a class="btn" href="${base}lecons/">Voir mes leçons</a>
+      </div>
+    `;
+  }
+
+  function renderGate() {
+    body.innerHTML = `
+      <p class="quiz-question">As-tu déjà écrit du code avant, en Python ou dans un autre langage ?</p>
+      <div class="quiz-options">
+        <button class="quiz-option" data-answer="oui">Oui, un peu</button>
+        <button class="quiz-option" data-answer="non">Non, jamais</button>
+      </div>
+    `;
+    body.querySelectorAll<HTMLButtonElement>(".quiz-option").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        if (btn.dataset.answer === "non") {
+          finirAu("debutant");
+        } else {
+          current++;
+          renderProgress();
+          renderStep();
+        }
+      });
+    });
+  }
+
+  function renderQuestion(niveauIndex: number, questionIndex: number) {
+    const niveau = NIVEAUX[niveauIndex];
+    const q = niveau.questions[questionIndex];
+
+    body.innerHTML = `
+      <span class="tag">${niveau.label}</span>
+      <p class="quiz-question">${q.enonce}</p>
+      ${q.code ? `<pre class="quiz-code">${q.code}</pre>` : ""}
+      <div class="quiz-options">
+        ${q.options
+          .map((opt, i) => `<button class="quiz-option" data-index="${i}">${opt}</button>`)
+          .join("")}
+      </div>
+    `;
+
+    const buttons = body.querySelectorAll<HTMLButtonElement>(".quiz-option");
+    buttons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const choisi = Number(btn.dataset.index);
+        buttons.forEach((b) => (b.disabled = true));
+
+        if (choisi === q.bonne) {
+          btn.classList.add("correct");
+        } else {
+          btn.classList.add("wrong");
+          buttons[q.bonne].classList.add("correct");
+        }
+
+        setTimeout(() => {
+          const dernierQuestionDuNiveau = questionIndex === niveau.questions.length - 1;
+
+          if (choisi !== q.bonne) {
+            // Échec : on s'arrête au niveau précédent (ou débutant si c'était le premier).
+            const niveauFinal = niveauIndex === 0 ? "debutant" : NIVEAUX[niveauIndex - 1].id;
+            finirAu(niveauFinal);
+            return;
+          }
+
+          if (dernierQuestionDuNiveau) {
+            if (niveauIndex === NIVEAUX.length - 1) {
+              // Dernier niveau réussi en entier.
+              finirAu(niveau.id);
+              return;
+            }
+            // Niveau réussi, on tente le suivant.
+          }
+
+          current++;
+          renderProgress();
+          renderStep();
+        }, 450);
+      });
+    });
+  }
+
+  function renderStep() {
+    const step = steps[current];
+    if (!step) {
+      finirAu(NIVEAUX[NIVEAUX.length - 1].id);
+      return;
+    }
+    if (step.kind === "gate") renderGate();
+    else renderQuestion(step.niveauIndex, step.questionIndex);
+  }
+
+  renderProgress();
+  renderStep();
+</script>
