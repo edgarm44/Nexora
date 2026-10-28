@@ -8,12 +8,15 @@ const niveaux = [
   { id: "confirme", glyphe: "{ }", nom: "Confirmé", desc: "Fonctions, listes, dictionnaires, un vrai terminal.", href: `${base}lecons/confirme/` },
   { id: "expert", glyphe: "#!", nom: "Expert", desc: "Classes, exceptions, modules, un aperçu du HTML.", href: `${base}lecons/expert/` },
   { id: "web", glyphe: "</>", nom: "Web", desc: "Construire une vraie page HTML, avec aperçu en direct.", href: `${base}lecons/web/` },
+  { id: "algorithmes", glyphe: "ƒ(x)", nom: "Algorithmes", desc: "Compréhensions, lambda, map/filter, récursivité, tri personnalisé.", href: `${base}lecons/algorithmes/` },
+  { id: "donnees", glyphe: "{...}", nom: "Données", desc: "Tuples, ensembles, formatage de texte, JSON.", href: `${base}lecons/donnees/` },
+  { id: "projet", glyphe: "*", nom: "Projet", desc: "Générateurs, gestion complète des erreurs, mini-projet final.", href: `${base}lecons/projet/` },
 ];
 ---
 <Base title="Nexora — Exercices">
   <span class="commentaire">parcours</span>
   <h1>Les exercices</h1>
-  <p class="lede">Pas de longs cours à lire : chaque notion tient en quelques phrases, suivies d'un exercice. Cinq niveaux, dans l'ordre : chacun se débloque en terminant le précédent.</p>
+  <p class="lede">Pas de longs cours à lire : chaque notion tient en quelques phrases, suivies d'un exercice. Huit niveaux, dans l'ordre : chacun se débloque en terminant le précédent.</p>
 
   <div class="carte" id="sans-test" style="display:none; margin-bottom: 1.5rem;">
     <span class="commentaire">avant de commencer</span>
@@ -34,8 +37,8 @@ const niveaux = [
 </Base>
 
 <script>
-  const ORDRE = ["debutant", "intermediaire", "confirme", "expert", "web"];
-  const TOTAUX_PAR_NIVEAU: Record<string, number> = { debutant: 7, intermediaire: 8, confirme: 8, expert: 9, web: 7 };
+  const ORDRE = ["debutant", "intermediaire", "confirme", "expert", "web", "algorithmes", "donnees", "projet"];
+  const TOTAUX_PAR_NIVEAU: Record<string, number> = { debutant: 7, intermediaire: 8, confirme: 8, expert: 9, web: 7, algorithmes: 8, donnees: 8, projet: 8 };
 
   function progres(niveauId: string): string[] {
     try {

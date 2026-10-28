@@ -1,0 +1,201 @@
+---
+import Base from "../../../layouts/Base.astro";
+---
+<Base title="Nexora — Projet">
+  <span class="commentaire">projet</span>
+  <h1>Tout combiner</h1>
+  <p class="lede">Générateurs, gestion d'erreurs complète, bonnes pratiques, et un mini-projet final qui rassemble tout ce que tu as appris depuis le début.</p>
+
+  <div class="carte" id="exo-card">
+    <div class="progression" id="exo-progress"></div>
+    <div id="exo-body"></div>
+  </div>
+</Base>
+
+<script is:inline src="https://cdn.jsdelivr.net/pyodide/v0.27.6/full/pyodide.js"></script>
+<script>
+  import { initExercices, type Unite } from "../../../lib/exercices";
+
+  const UNITES: Unite[] = [
+    {
+      id: "u1",
+      titre: "Les générateurs : produire des valeurs une par une",
+      explication:
+        "Un générateur est une fonction qui produit une suite de valeurs une par une avec <code>yield</code>, au lieu de tout calculer et stocker d'un coup. Ça économise de la mémoire sur de grandes séquences.",
+      exemple: [
+        "def compte(n):\n    for i in range(n):\n        yield i\n\nfor x in compte(3):\n    print(x)\n# 0\n# 1\n# 2",
+      ],
+      consigne: "Quelle est la principale différence entre <code>yield</code> et <code>return</code> ?",
+      type: "qcm",
+      options: [
+        "yield arrête complètement la fonction, comme return",
+        "yield produit une valeur puis met la fonction en pause ; return arrête définitivement la fonction",
+        "Il n'y a aucune différence entre les deux",
+        "return ne peut être utilisé qu'une seule fois, yield jamais",
+      ],
+      bonneOption: 1,
+    },
+    {
+      id: "u2",
+      titre: "Écrire son propre générateur",
+      explication:
+        "On peut itérer sur un générateur avec une boucle <code>for</code>, exactement comme sur une liste.",
+      exemple: [
+        "def doubles_jusqua(n):\n    for i in range(1, n + 1):\n        yield i * 2\n\nfor d in doubles_jusqua(3):\n    print(d)\n# 2\n# 4\n# 6",
+      ],
+      consigne:
+        "Complète le générateur pour qu'il produise le carré de chaque nombre de 1 à n, puis utilise-le pour remplir <code>resultat</code> avec tous les carrés jusqu'à 5.",
+      code: [
+        "def carres_jusqua(n):",
+        "    for i in range(1, n + 1):",
+        "        pass",
+        "",
+        "resultat = []",
+        "for c in carres_jusqua(5):",
+        "    resultat.append(c)",
+        "print(resultat)",
+      ],
+      type: "code",
+      codeDepart:
+        "def carres_jusqua(n):\n    for i in range(1, n + 1):\n        pass\n\nresultat = []\nfor c in carres_jusqua(5):\n    resultat.append(c)\nprint(resultat)",
+      sortieAttendue: /\[1,\s*4,\s*9,\s*16,\s*25\]/,
+      indiceCode: "Remplace pass par : yield i * i",
+    },
+    {
+      id: "u3",
+      titre: "Plusieurs except, et finally",
+      explication:
+        "On peut intercepter plusieurs types d'erreurs différentes avec plusieurs blocs <code>except</code>, et utiliser <code>finally</code> pour du code qui s'exécute toujours, qu'il y ait eu une erreur ou pas.",
+      exemple: [
+        'try:\n    resultat = 10 / 0\nexcept ZeroDivisionError:\n    print("division par zéro")\nexcept TypeError:\n    print("type incorrect")\nfinally:\n    print("fin du traitement")',
+      ],
+      consigne: "Dans l'exemple ci-dessus, que va afficher ce code ?",
+      type: "qcm",
+      options: [
+        "division par zéro, puis fin du traitement",
+        "type incorrect, puis fin du traitement",
+        "fin du traitement seulement",
+        "Une erreur non interceptée, le programme s'arrête",
+      ],
+      bonneOption: 0,
+    },
+    {
+      id: "u4",
+      titre: "Intercepter une erreur de conversion",
+      explication:
+        "<code>int(\"abc\")</code> lève une <code>ValueError</code> car \"abc\" n'est pas un nombre valide. On peut l'intercepter avec <code>except ValueError</code>.",
+      exemple: [
+        'try:\n    n = int("12")\n    print(n)\nexcept ValueError:\n    print("Entrée invalide")\nfinally:\n    print("fin")\n# 12\n# fin',
+      ],
+      consigne:
+        'Complète pour intercepter la ValueError si la conversion échoue (afficher "Entrée invalide"), et afficher "fin" dans tous les cas.',
+      code: [
+        'valeur = "abc"',
+        "try:",
+        "    nombre = int(valeur)",
+        "    print(nombre)",
+        "except Exception:",
+        "    pass",
+      ],
+      type: "code",
+      codeDepart:
+        'valeur = "abc"\ntry:\n    nombre = int(valeur)\n    print(nombre)\nexcept Exception:\n    pass',
+      sortieAttendue: /Entrée invalide\s*\n\s*fin/,
+      indiceCode: 'except ValueError:\n    print("Entrée invalide")\nfinally:\n    print("fin")',
+    },
+    {
+      id: "u5",
+      titre: "Le mot-clé with",
+      explication:
+        "<code>with</code> garantit qu'une ressource (comme un fichier) est bien refermée à la fin du bloc, même si une erreur se produit à l'intérieur. C'est plus sûr que d'ouvrir et fermer soi-même.",
+      exemple: [
+        'with open("data.txt") as f:\n    contenu = f.read()\n# le fichier se referme automatiquement ici',
+      ],
+      consigne: "Quel est l'avantage principal du mot-clé <code>with</code> par rapport à ouvrir et fermer une ressource manuellement ?",
+      type: "qcm",
+      options: [
+        "Il rend le code plus lent mais plus joli",
+        "Il garantit que la ressource est bien refermée, même en cas d'erreur",
+        "Il empêche toute erreur de se produire dans le bloc",
+        "Il n'a aucun avantage, c'est juste une autre syntaxe",
+      ],
+      bonneOption: 1,
+    },
+    {
+      id: "u6",
+      titre: "Une fonction bien construite",
+      explication:
+        "Une bonne fonction fait une seule chose, a un nom clair, et renvoie un résultat plutôt que de l'afficher directement : ça permet de la réutiliser ailleurs.",
+      exemple: [
+        "def moyenne(valeurs):\n    return sum(valeurs) / len(valeurs)\n\nprint(moyenne([10, 20]))\n# 15.0",
+      ],
+      consigne:
+        "Écris le corps de <code>moyenne(notes)</code> pour qu'elle renvoie la moyenne d'une liste de notes, puis affiche le résultat arrondi à 1 décimale.",
+      code: [
+        "def moyenne(notes):",
+        "    pass",
+        "",
+        "notes = [12, 8, 15, 10, 17]",
+        "m = moyenne(notes)",
+        'print(f"{m:.1f}")',
+      ],
+      type: "code",
+      codeDepart:
+        'def moyenne(notes):\n    pass\n\nnotes = [12, 8, 15, 10, 17]\nm = moyenne(notes)\nprint(f"{m:.1f}")',
+      sortieAttendue: /^12\.4$/,
+      indiceCode: "return sum(notes) / len(notes)",
+    },
+    {
+      id: "u7",
+      titre: "Documenter une fonction",
+      explication:
+        "Une docstring est un texte de documentation placé juste après la ligne <code>def</code>, entre triples guillemets, qui explique ce que fait la fonction. Les outils et éditeurs l'affichent automatiquement.",
+      exemple: [
+        'def carre(x):\n    """Renvoie le carré de x."""\n    return x * x',
+      ],
+      consigne: "Où place-t-on la docstring d'une fonction ?",
+      type: "qcm",
+      options: [
+        "Juste avant la ligne def",
+        "Juste après la ligne def, entre triples guillemets",
+        "À la toute fin du fichier",
+        "Dans un commentaire avec #, n'importe où",
+      ],
+      bonneOption: 1,
+    },
+    {
+      id: "u8",
+      titre: "Mini-projet final : moyenne filtrée",
+      explication:
+        "Dernier exercice : combine une liste en compréhension (pour filtrer), <code>sum</code> et <code>len</code> (pour calculer), et une f-string (pour afficher). Tout ce que tu as appris, en une fois.",
+      exemple: [
+        'notes = [8, 12, 16]\nnotes_admises = [n for n in notes if n >= 10]\nprint(notes_admises)\n# [12, 16]',
+      ],
+      consigne:
+        "Dans la liste de dictionnaires <code>eleves</code>, calcule la moyenne des notes supérieures ou égales à 10 avec une liste en compréhension, stocke-la dans <code>m</code>, puis affiche-la arrondie à 1 décimale.",
+      code: [
+        'eleves = [{"nom": "Ada", "note": 14}, {"nom": "Bo", "note": 8}, {"nom": "Cy", "note": 11}]',
+        "notes_admises = []",
+        "m = 0",
+        'print(f"{m:.1f}")',
+      ],
+      type: "code",
+      codeDepart:
+        'eleves = [{"nom": "Ada", "note": 14}, {"nom": "Bo", "note": 8}, {"nom": "Cy", "note": 11}]\nnotes_admises = []\nm = 0\nprint(f"{m:.1f}")',
+      sortieAttendue: /^12\.5$/,
+      indiceCode:
+        'notes_admises = [e["note"] for e in eleves if e["note"] >= 10]\nm = sum(notes_admises) / len(notes_admises)',
+    },
+  ];
+
+  initExercices({
+    unites: UNITES,
+    cleProgres: "nexora_progres_projet",
+    corpsId: "exo-body",
+    progressionId: "exo-progress",
+    base: import.meta.env.BASE_URL,
+    titreFin: "Félicitations, tu as terminé tous les niveaux !",
+    texteFin: "Générateurs, gestion complète des erreurs, bonnes pratiques, et un mini-projet qui combine tout. Tu es parti de zéro, et tu maîtrises maintenant des notions que beaucoup de développeurs utilisent chaque jour.",
+    retourHref: `${import.meta.env.BASE_URL}lecons/`,
+  });
+</script>

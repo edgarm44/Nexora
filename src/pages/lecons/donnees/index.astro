@@ -1,0 +1,138 @@
+---
+import Base from "../../../layouts/Base.astro";
+---
+<Base title="Nexora — Données">
+  <span class="commentaire">données</span>
+  <h1>Manipuler des données structurées</h1>
+  <p class="lede">Tuples, ensembles, mise en forme de texte, et le format JSON utilisé partout sur le web pour échanger des informations entre programmes.</p>
+
+  <div class="carte" id="exo-card">
+    <div class="progression" id="exo-progress"></div>
+    <div id="exo-body"></div>
+  </div>
+</Base>
+
+<script is:inline src="https://cdn.jsdelivr.net/pyodide/v0.27.6/full/pyodide.js"></script>
+<script>
+  import { initExercices, type Unite } from "../../../lib/exercices";
+
+  const UNITES: Unite[] = [
+    {
+      id: "u1",
+      titre: "Les tuples, des listes qui ne changent pas",
+      explication:
+        "Un tuple ressemble à une liste, mais s'écrit avec des parenthèses et ne peut plus être modifié une fois créé : c'est utile pour des données qui ne doivent jamais changer, comme des coordonnées.",
+      exemple: ["point = (3, 4)\nprint(point)\n# (3, 4)"],
+      consigne: "Que se passe-t-il si on essaie de faire <code>point[0] = 10</code> sur un tuple ?",
+      type: "qcm",
+      options: [
+        "Ça fonctionne normalement, comme pour une liste",
+        "Une erreur, car un tuple ne peut pas être modifié",
+        "Le tuple se transforme automatiquement en liste",
+        "Rien ne se passe, mais la valeur ne change pas",
+      ],
+      bonneOption: 1,
+    },
+    {
+      id: "u2",
+      titre: "Dégrouper un tuple",
+      explication:
+        "On peut extraire les valeurs d'un tuple directement dans plusieurs variables en une seule ligne : c'est le <em>unpacking</em>.",
+      exemple: ["x, y = (3, 4)\nprint(x)\n# 3\nprint(y)\n# 4"],
+      consigne: "Dégroupe le tuple <code>point</code> en deux variables <code>x</code> et <code>y</code>, puis affiche leur somme.",
+      code: ["point = (3, 4)", "", "print()"],
+      type: "code",
+      codeDepart: "point = (3, 4)\n\nprint()",
+      sortieAttendue: /^7$/,
+      indiceCode: "x, y = point\nprint(x + y)",
+    },
+    {
+      id: "u3",
+      titre: "Les ensembles (set) : pas de doublons",
+      explication:
+        "Un <code>set</code> est une collection qui ne garde jamais deux fois la même valeur, et dont l'ordre n'est pas garanti. Transformer une liste en set est une façon rapide de retirer les doublons.",
+      exemple: ["s = set([1, 1, 2, 3, 3, 3])\nprint(s)\n# {1, 2, 3}"],
+      consigne: "Que contient <code>set([1, 1, 2, 3, 3, 3])</code> ?",
+      type: "qcm",
+      options: ["{1, 1, 2, 3, 3, 3}", "{1, 2, 3}", "[1, 2, 3]", "Une erreur"],
+      bonneOption: 1,
+    },
+    {
+      id: "u4",
+      titre: "Retirer les doublons d'une liste",
+      explication:
+        "Pour nettoyer une liste, on la transforme en set (les doublons disparaissent), puis on la retransforme en liste avec <code>list(...)</code>. <code>sorted(...)</code> la remet dans l'ordre.",
+      exemple: ["lettres = [\"b\", \"a\", \"b\", \"c\"]\nresultat = sorted(list(set(lettres)))\nprint(resultat)\n# ['a', 'b', 'c']"],
+      consigne: "Retire les doublons de <code>notes</code>, trie le résultat, stocke-le dans <code>resultat</code>, puis affiche-le.",
+      code: ["notes = [12, 15, 12, 9, 15, 18]", "resultat = []", "print(resultat)"],
+      type: "code",
+      codeDepart: "notes = [12, 15, 12, 9, 15, 18]\nresultat = []\nprint(resultat)",
+      sortieAttendue: /\[9,\s*12,\s*15,\s*18\]/,
+      indiceCode: "resultat = sorted(list(set(notes)))",
+    },
+    {
+      id: "u5",
+      titre: "Mettre en forme un nombre avec une f-string",
+      explication:
+        "Dans une f-string, <code>{valeur:.2f}</code> arrondit un nombre à 2 chiffres après la virgule. Le nombre après le point indique combien de décimales garder.",
+      exemple: ["pi = 3.14159\nprint(f\"{pi:.2f}\")\n# 3.14"],
+      consigne: "Que va afficher <code>print(f\"{3.14159:.2f}\")</code> ?",
+      type: "qcm",
+      options: ["3.14159", "3.14", "3", "Une erreur"],
+      bonneOption: 1,
+    },
+    {
+      id: "u6",
+      titre: "Formater une moyenne",
+      explication:
+        "Même principe qu'avant : on combine du texte et une valeur formatée dans la même f-string.",
+      exemple: ["taux = 0.6666\nprint(f\"Taux : {taux:.1%}\")\n# Taux : 66.7%"],
+      consigne: 'Affiche la valeur de <code>moyenne</code> arrondie à 1 décimale, précédée du texte "Moyenne : ".',
+      code: ["moyenne = 14.6789", "print()"],
+      type: "code",
+      codeDepart: "moyenne = 14.6789\nprint()",
+      sortieAttendue: /Moyenne\s*:\s*14\.7/,
+      indiceCode: 'print(f"Moyenne : {moyenne:.1f}")',
+    },
+    {
+      id: "u7",
+      titre: "Le format JSON",
+      explication:
+        "JSON est un format texte utilisé partout sur le web pour échanger des données structurées (listes, dictionnaires). <code>json.dumps(objet)</code> transforme un objet Python en texte JSON ; <code>json.loads(texte)</code> fait l'inverse.",
+      exemple: ["import json\ndata = {\"nom\": \"Ada\"}\ntexte = json.dumps(data)\nprint(texte)\n# {\"nom\": \"Ada\"}"],
+      consigne: "Que fait <code>json.loads(texte)</code> si <code>texte</code> contient du JSON valide ?",
+      type: "qcm",
+      options: [
+        "Transforme le texte JSON en objet Python (dict ou liste)",
+        "Transforme un objet Python en texte JSON",
+        "Supprime le texte",
+        "Affiche le texte sans rien changer",
+      ],
+      bonneOption: 0,
+    },
+    {
+      id: "u8",
+      titre: "Convertir un dictionnaire en JSON",
+      explication:
+        "Il faut d'abord importer le module avec <code>import json</code>, puis utiliser <code>json.dumps</code> sur le dictionnaire à convertir.",
+      exemple: ["import json\nprint(json.dumps({\"ok\": True}))\n# {\"ok\": true}"],
+      consigne: "Transforme le dictionnaire <code>eleve</code> en texte JSON avec <code>json.dumps</code>, stocke le résultat dans <code>texte</code>, puis affiche-le.",
+      code: ["import json", 'eleve = {"nom": "Ada", "niveau": "expert"}', 'texte = ""', "print(texte)"],
+      type: "code",
+      codeDepart: 'import json\neleve = {"nom": "Ada", "niveau": "expert"}\ntexte = ""\nprint(texte)',
+      sortieAttendue: /"nom":\s*"Ada".*"niveau":\s*"expert"/,
+      indiceCode: "texte = json.dumps(eleve)",
+    },
+  ];
+
+  initExercices({
+    unites: UNITES,
+    cleProgres: "nexora_progres_donnees",
+    corpsId: "exo-body",
+    progressionId: "exo-progress",
+    base: import.meta.env.BASE_URL,
+    titreFin: "Niveau Données terminé !",
+    texteFin: "Tuples, sets, formatage de texte, JSON : tu sais maintenant manipuler des données comme le font les vrais programmes qui échangent des informations sur le web.",
+    retourHref: `${import.meta.env.BASE_URL}lecons/`,
+  });
+</script>

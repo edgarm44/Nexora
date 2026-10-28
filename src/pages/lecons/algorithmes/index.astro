@@ -1,0 +1,151 @@
+---
+import Base from "../../../layouts/Base.astro";
+---
+<Base title="Nexora — Algorithmes">
+  <span class="commentaire">algorithmes</span>
+  <h1>Penser comme un programmeur</h1>
+  <p class="lede">Des outils pour écrire du code plus court et plus puissant : transformer des listes en une ligne, créer des fonctions à la volée, et faire qu'une fonction s'appelle elle-même.</p>
+
+  <div class="carte" id="exo-card">
+    <div class="progression" id="exo-progress"></div>
+    <div id="exo-body"></div>
+  </div>
+</Base>
+
+<script is:inline src="https://cdn.jsdelivr.net/pyodide/v0.27.6/full/pyodide.js"></script>
+<script>
+  import { initExercices, type Unite } from "../../../lib/exercices";
+
+  const UNITES: Unite[] = [
+    {
+      id: "u1",
+      titre: "Les listes en compréhension",
+      explication:
+        "Une liste en compréhension crée une liste en une seule ligne, en appliquant une règle à chaque élément d'une séquence. <code>[x * 2 for x in range(5)]</code> construit la liste des doubles de 0 à 4, sans boucle écrite à la main.",
+      exemple: ["[x * 2 for x in range(5)]\n# [0, 2, 4, 6, 8]"],
+      consigne: "Que contient la liste produite par <code>[x for x in range(4)]</code> ?",
+      type: "qcm",
+      options: ["[0, 1, 2, 3]", "[1, 2, 3, 4]", "[0, 1, 2, 3, 4]", "Une erreur"],
+      bonneOption: 0,
+    },
+    {
+      id: "u2",
+      titre: "Écrire sa première compréhension",
+      explication:
+        "La syntaxe générale est <code>[expression for variable in sequence]</code>. On peut utiliser <code>**</code> pour calculer une puissance : <code>x**2</code> est le carré de x.",
+      exemple: ["carres = [x**2 for x in range(1, 4)]\nprint(carres)\n# [1, 4, 9]"],
+      consigne: 'Crée une liste en compréhension <code>carres</code> contenant le carré de chaque nombre de 1 à 5 (inclus), puis affiche-la.',
+      code: ["carres = []", "print(carres)"],
+      type: "code",
+      codeDepart: "carres = []\nprint(carres)",
+      sortieAttendue: /\[1,\s*4,\s*9,\s*16,\s*25\]/,
+      indiceCode: "Utilise range(1, 6) pour aller de 1 à 5, et élève chaque nombre au carré avec **2.",
+    },
+    {
+      id: "u3",
+      titre: "Les fonctions lambda",
+      explication:
+        "<code>lambda</code> crée une fonction sans nom, en une seule ligne : <code>lambda x: x + 1</code> est une fonction qui prend x et renvoie x + 1. Pratique pour une fonction courte, utilisée une seule fois.",
+      exemple: ["carre = lambda x: x * x\nprint(carre(5))\n# 25"],
+      consigne: "Que renvoie <code>(lambda x: x * 3)(4)</code> ?",
+      type: "qcm",
+      options: ["7", "12", "lambda", "Une erreur"],
+      bonneOption: 1,
+    },
+    {
+      id: "u4",
+      titre: "Transformer une liste avec map",
+      explication:
+        "<code>map(fonction, liste)</code> applique une fonction à chaque élément d'une liste. On l'entoure de <code>list(...)</code> pour voir le résultat comme une vraie liste.",
+      exemple: [
+        "nombres = [1, 2, 3]\ndoubles = list(map(lambda x: x * 2, nombres))\nprint(doubles)\n# [2, 4, 6]",
+      ],
+      consigne:
+        "Utilise map pour ajouter 10 à chaque nombre de <code>nombres</code>, stocke le résultat dans <code>resultat</code>, puis affiche-le.",
+      code: ["nombres = [1, 2, 3, 4]", "resultat = []", "print(resultat)"],
+      type: "code",
+      codeDepart: "nombres = [1, 2, 3, 4]\nresultat = []\nprint(resultat)",
+      sortieAttendue: /\[11,\s*12,\s*13,\s*14\]/,
+      indiceCode: "resultat = list(map(lambda x: x + 10, nombres))",
+    },
+    {
+      id: "u5",
+      titre: "Garder certains éléments avec filter",
+      explication:
+        "<code>filter(fonction, liste)</code> garde seulement les éléments pour lesquels la fonction renvoie True. Comme map, on l'entoure de <code>list(...)</code>.",
+      exemple: [
+        "nombres = [1, 2, 3, 4, 5, 6]\npairs = list(filter(lambda x: x % 2 == 0, nombres))\nprint(pairs)\n# [2, 4, 6]",
+      ],
+      consigne:
+        "Utilise filter pour garder seulement les nombres strictement supérieurs à 3 dans <code>nombres</code>, stocke le résultat dans <code>resultat</code>, puis affiche-le.",
+      code: ["nombres = [1, 2, 3, 4, 5, 6]", "resultat = []", "print(resultat)"],
+      type: "code",
+      codeDepart: "nombres = [1, 2, 3, 4, 5, 6]\nresultat = []\nprint(resultat)",
+      sortieAttendue: /\[4,\s*5,\s*6\]/,
+      indiceCode: "resultat = list(filter(lambda x: x > 3, nombres))",
+    },
+    {
+      id: "u6",
+      titre: "Une fonction qui s'appelle elle-même",
+      explication:
+        "Une fonction récursive s'appelle elle-même, avec un <strong>cas de base</strong> qui arrête les appels. Exemple : la factorielle de n est n fois la factorielle de n-1, et la factorielle de 0 est 1 (le cas de base).",
+      exemple: [
+        "def factorielle(n):\n    if n == 0:\n        return 1\n    return n * factorielle(n - 1)\n\nprint(factorielle(4))\n# 24",
+      ],
+      consigne:
+        "Sans le cas de base (<code>if n == 0: return 1</code>), que se passerait-il si on appelait factorielle(4) ?",
+      type: "qcm",
+      options: [
+        "La fonction s'appelle indéfiniment, sans jamais s'arrêter",
+        "La fonction renvoie 0",
+        "Rien ne change, le résultat est le même",
+        "La fonction renvoie 24 quand même",
+      ],
+      bonneOption: 0,
+    },
+    {
+      id: "u7",
+      titre: "Écrire sa propre fonction récursive",
+      explication:
+        "À toi d'écrire la fonction complète cette fois : il faut le cas de base (qui arrête les appels) et l'appel récursif (qui rapproche du cas de base à chaque fois).",
+      exemple: [
+        "def compte_a_rebours(n):\n    if n == 0:\n        return\n    print(n)\n    compte_a_rebours(n - 1)",
+      ],
+      consigne: "Complète factorielle pour qu'elle calcule correctement n! (comme dans l'exemple précédent), puis affiche factorielle(5).",
+      code: ["def factorielle(n):", "    pass", "", "print(factorielle(5))"],
+      type: "code",
+      codeDepart: "def factorielle(n):\n    pass\n\nprint(factorielle(5))",
+      sortieAttendue: /^120$/,
+      indiceCode: "N'oublie pas le cas de base : if n == 0: return 1. Puis : return n * factorielle(n - 1).",
+    },
+    {
+      id: "u8",
+      titre: "Trier avec une règle personnalisée",
+      explication:
+        "<code>sorted(liste, key=...)</code> trie une liste selon une règle qu'on choisit. <code>key=len</code> trie par longueur plutôt que par ordre alphabétique.",
+      exemple: [
+        'mots = ["pomme", "kiwi", "banane"]\nprint(sorted(mots, key=len))\n# [\'kiwi\', \'pomme\', \'banane\']',
+      ],
+      consigne: "Que fait <code>key=len</code> dans <code>sorted(mots, key=len)</code> ?",
+      type: "qcm",
+      options: [
+        "Trie les mots par ordre alphabétique",
+        "Trie les mots du plus court au plus long",
+        "Trie les mots dans un ordre aléatoire",
+        "Provoque une erreur car len n'est pas un nombre",
+      ],
+      bonneOption: 1,
+    },
+  ];
+
+  initExercices({
+    unites: UNITES,
+    cleProgres: "nexora_progres_algorithmes",
+    corpsId: "exo-body",
+    progressionId: "exo-progress",
+    base: import.meta.env.BASE_URL,
+    titreFin: "Niveau Algorithmes terminé !",
+    texteFin: "Compréhensions de liste, lambda, map, filter, récursivité, tri personnalisé : tu manipules maintenant des outils que beaucoup de programmeurs expérimentés utilisent au quotidien.",
+    retourHref: `${import.meta.env.BASE_URL}lecons/`,
+  });
+</script>
