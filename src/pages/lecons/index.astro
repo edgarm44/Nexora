@@ -6,7 +6,7 @@ const niveaux = [
   { id: "debutant", glyphe: ">", nom: "Débutant", desc: "Afficher un message, utiliser des variables.", href: `${base}lecons/debutant/`, pret: true },
   { id: "intermediaire", glyphe: ">_", nom: "Intermédiaire", desc: "Conditions, boucles, logique de base.", href: `${base}lecons/intermediaire/`, pret: true },
   { id: "confirme", glyphe: "{ }", nom: "Confirmé", desc: "Fonctions, listes, dictionnaires, un vrai terminal.", href: `${base}lecons/confirme/`, pret: true },
-  { id: "expert", glyphe: "#!", nom: "Expert", desc: "Classes, exceptions, modules, puis le web statique.", href: null, pret: false },
+  { id: "expert", glyphe: "#!", nom: "Expert", desc: "Classes, exceptions, modules, un aperçu du HTML.", href: `${base}lecons/expert/`, pret: true },
 ];
 ---
 <Base title="Nexora — Exercices">
@@ -36,7 +36,7 @@ const niveaux = [
 </Base>
 
 <script>
-  const TOTAUX_PAR_NIVEAU: Record<string, number> = { debutant: 4, intermediaire: 5, confirme: 5 };
+  const TOTAUX_PAR_NIVEAU: Record<string, number> = { debutant: 4, intermediaire: 5, confirme: 5, expert: 6 };
 
   function progres(niveauId: string): string[] {
     try {

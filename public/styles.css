@@ -517,6 +517,7 @@ main > p.lede {
   font-size: 0.9rem;
   color: var(--ink-dim);
   white-space: pre-wrap;
+  word-break: break-word;
   min-height: 1.6rem;
 }
 .terminal-sortie.vide::before { content: "La sortie de ton programme s'affichera ici."; color: var(--ink-faint); font-style: italic; }
@@ -527,7 +528,8 @@ main > p.lede {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.75rem;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
   padding: 0.6rem 1rem;
   border-top: 1px solid var(--line);
 }
