@@ -189,16 +189,9 @@ import Base from "../../layouts/Base.astro";
         <p style="color: var(--ink-dim);">${dejaEnregistre ? "Tu as déjà passé ce test." : "On a préparé des exercices adaptés à ce niveau."} Direction tes exercices.</p>
         <div class="actions">
           <a class="btn" href="${base}lecons/">Voir mes exercices</a>
-          <button class="btn-ghost" id="refaire-test" type="button">Refaire le test</button>
         </div>
       </div>
     `;
-    document.getElementById("refaire-test")!.addEventListener("click", () => {
-      localStorage.removeItem("nexora_niveau");
-      current = 0;
-      renderProgress();
-      renderStep();
-    });
   }
 
   function renderGate() {

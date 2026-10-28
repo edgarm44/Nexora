@@ -3,39 +3,37 @@ import Base from "../../layouts/Base.astro";
 const base = import.meta.env.BASE_URL;
 
 const niveaux = [
-  { id: "debutant", glyphe: ">", nom: "Débutant", desc: "Afficher un message, utiliser des variables.", href: `${base}lecons/debutant/`, pret: true },
-  { id: "intermediaire", glyphe: ">_", nom: "Intermédiaire", desc: "Conditions, boucles, logique de base.", href: `${base}lecons/intermediaire/`, pret: true },
-  { id: "confirme", glyphe: "{ }", nom: "Confirmé", desc: "Fonctions, listes, dictionnaires, un vrai terminal.", href: `${base}lecons/confirme/`, pret: true },
-  { id: "expert", glyphe: "#!", nom: "Expert", desc: "Classes, exceptions, modules, un aperçu du HTML.", href: `${base}lecons/expert/`, pret: true },
+  { id: "debutant", glyphe: ">", nom: "Débutant", desc: "Afficher un message, utiliser des variables.", href: `${base}lecons/debutant/` },
+  { id: "intermediaire", glyphe: ">_", nom: "Intermédiaire", desc: "Conditions, boucles, logique de base.", href: `${base}lecons/intermediaire/` },
+  { id: "confirme", glyphe: "{ }", nom: "Confirmé", desc: "Fonctions, listes, dictionnaires, un vrai terminal.", href: `${base}lecons/confirme/` },
+  { id: "expert", glyphe: "#!", nom: "Expert", desc: "Classes, exceptions, modules, un aperçu du HTML.", href: `${base}lecons/expert/` },
 ];
 ---
 <Base title="Nexora — Exercices">
   <span class="commentaire">parcours</span>
   <h1>Les exercices</h1>
-  <p class="lede">Pas de longs cours à lire : chaque notion tient en quelques phrases, suivies d'un exercice. Quatre niveaux, dans l'ordre.</p>
+  <p class="lede">Pas de longs cours à lire : chaque notion tient en quelques phrases, suivies d'un exercice. Quatre niveaux, dans l'ordre : chacun se débloque en terminant le précédent.</p>
+
+  <div class="carte" id="sans-test" style="display:none; margin-bottom: 1.5rem;">
+    <span class="commentaire">avant de commencer</span>
+    <p style="margin: 0 0 1rem; color: var(--ink-dim);">Passe d'abord le test de positionnement pour débloquer ton premier niveau.</p>
+    <div class="actions"><a class="btn" href={`${base}test/`}>Faire le test</a></div>
+  </div>
 
   <div class="grille-niveaux" id="niveaux">
     {niveaux.map((n) => (
-      n.pret ? (
-        <a class="carte-niveau" data-niveau={n.id} href={n.href}>
-          <span class="glyphe">{n.glyphe}</span>
-          <h3>{n.nom}</h3>
-          <p>{n.desc}</p>
-          <span class="suite">Commencer</span>
-        </a>
-      ) : (
-        <div class="carte-niveau verrouille" data-niveau={n.id}>
-          <span class="glyphe">{n.glyphe}</span>
-          <h3>{n.nom}</h3>
-          <p>{n.desc}</p>
-          <span class="suite">Bientôt</span>
-        </div>
-      )
+      <a class="carte-niveau" data-niveau={n.id} data-href={n.href} href={n.href}>
+        <span class="glyphe">{n.glyphe}</span>
+        <h3>{n.nom}</h3>
+        <p>{n.desc}</p>
+        <span class="suite" data-suite>Verrouillé</span>
+      </a>
     ))}
   </div>
 </Base>
 
 <script>
+  const ORDRE = ["debutant", "intermediaire", "confirme", "expert"];
   const TOTAUX_PAR_NIVEAU: Record<string, number> = { debutant: 4, intermediaire: 5, confirme: 5, expert: 6 };
 
   function progres(niveauId: string): string[] {
@@ -46,25 +44,61 @@ const niveaux = [
     }
   }
 
-  const niveauTrouve = localStorage.getItem("nexora_niveau");
+  function estComplet(niveauId: string): boolean {
+    const total = TOTAUX_PAR_NIVEAU[niveauId];
+    return total ? progres(niveauId).length >= total : false;
+  }
 
-  document.querySelectorAll<HTMLElement>(".carte-niveau[data-niveau]").forEach((carte) => {
+  const niveauTrouve = localStorage.getItem("nexora_niveau");
+  const rangTrouve = niveauTrouve ? ORDRE.indexOf(niveauTrouve) : -1;
+
+  if (!niveauTrouve) {
+    document.getElementById("sans-test")!.style.display = "block";
+  }
+
+  document.querySelectorAll<HTMLAnchorElement>(".carte-niveau[data-niveau]").forEach((carte) => {
     const id = carte.getAttribute("data-niveau")!;
+    const rang = ORDRE.indexOf(id);
     const total = TOTAUX_PAR_NIVEAU[id];
-    const fait = total ? progres(id).length : 0;
+    const fait = progres(id).length;
+
+    const precedentOk = rang === 0 || estComplet(ORDRE[rang - 1]);
+    const debloque = rangTrouve >= 0 && (rang <= rangTrouve || precedentOk);
+
+    const suite = carte.querySelector("[data-suite]")!;
+
+    if (!debloque) {
+      carte.classList.add("verrouille");
+      carte.removeAttribute("href");
+      carte.addEventListener("click", (e) => e.preventDefault());
+      suite.textContent = rang === 0 ? "Fais le test" : "Verrouillé";
+      return;
+    }
+
+    carte.setAttribute("href", carte.dataset.href!);
 
     if (id === niveauTrouve) carte.classList.add("actif");
 
-    if (total && fait > 0) {
+    if (fait >= total) {
+      suite.textContent = "Revoir";
       const pastille = document.createElement("span");
       pastille.className = "pastille";
-      pastille.textContent = fait >= total ? "terminé" : `${fait}/${total}`;
+      pastille.textContent = "terminé";
       carte.appendChild(pastille);
-    } else if (id === niveauTrouve) {
+    } else if (fait > 0) {
+      suite.textContent = "Continuer";
       const pastille = document.createElement("span");
       pastille.className = "pastille";
-      pastille.textContent = "ton niveau";
+      pastille.textContent = `${fait}/${total}`;
       carte.appendChild(pastille);
+    } else {
+      suite.textContent = "Commencer";
+      if (id === niveauTrouve) {
+        const pastille = document.createElement("span");
+        pastille.className = "pastille";
+        pastille.textContent = "ton niveau";
+        carte.appendChild(pastille);
+      }
     }
   });
 </script>
