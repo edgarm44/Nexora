@@ -401,25 +401,26 @@ main > p.lede {
 
 .question { font-size: 1.2rem; font-weight: 700; font-family: var(--font-head); margin: 0 0 1.1rem; }
 
-.options { display: grid; gap: 0.6rem; margin-top: 1rem; }
+.options { display: grid; gap: 1rem; margin-top: 1.2rem; }
 
 .option {
   text-align: left;
   width: 100%;
-  padding: 0.95rem 1.2rem;
+  padding: 1.1rem 1.3rem;
   border-radius: var(--radius-sm);
-  border: 1.5px solid var(--line-strong);
+  border: 2px solid var(--line-strong);
   background: var(--bg-sunken);
   color: var(--ink);
   font-size: 0.98rem;
   font-family: var(--font-mono);
   font-weight: 500;
+  box-shadow: 0 6px 16px -12px rgba(0, 0, 0, 0.6);
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.03) inset;
   transition: border-color 0.15s ease, background 0.15s ease, transform 0.12s ease;
 }
 .option:hover:not(:disabled) { border-color: var(--blue); background: var(--blue-soft); transform: translateX(2px); }
-.option.bonne { border-color: var(--good); background: rgba(95, 201, 141, 0.16); color: #d6f5e3; }
-.option.mauvaise { border-color: var(--bad); background: rgba(226, 105, 92, 0.16); color: #fbdbd7; }
+.option.bonne { border-color: var(--good); border-width: 2.5px; background: rgba(95, 201, 141, 0.18); color: #d6f5e3; box-shadow: 0 0 0 3px rgba(95, 201, 141, 0.18); }
+.option.mauvaise { border-color: var(--bad); border-width: 2.5px; background: rgba(226, 105, 92, 0.18); color: #fbdbd7; box-shadow: 0 0 0 3px rgba(226, 105, 92, 0.18); }
 .option:disabled { opacity: 1; }
 .option:disabled:not(.bonne):not(.mauvaise) { opacity: 0.45; }
 

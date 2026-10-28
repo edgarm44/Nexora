@@ -14,7 +14,7 @@ const base = import.meta.env.BASE_URL;
         on commence par savoir où tu en es.
       </p>
       <div class="actions">
-        <a class="btn" href={`${base}test/`}>Trouver mon niveau</a>
+        <a class="btn" id="btn-trouver-niveau" href={`${base}test/`}>Trouver mon niveau</a>
         <a class="btn-ghost" href={`${base}lecons/`}>Voir les leçons</a>
       </div>
 
@@ -50,6 +50,10 @@ const base = import.meta.env.BASE_URL;
   }
 
   const niveauTrouve = localStorage.getItem("nexora_niveau");
+  if (niveauTrouve) {
+    const boutonTest = document.getElementById("btn-trouver-niveau");
+    if (boutonTest) boutonTest.remove();
+  }
   if (niveauTrouve) {
     const totalGeneral = Object.values(TOTAUX).reduce((a, b) => a + b, 0);
     const faitGeneral = ORDRE.reduce((acc, id) => acc + Math.min(progres(id).length, TOTAUX[id]), 0);
