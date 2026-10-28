@@ -1,0 +1,24 @@
+---
+const { title = "Nexora" } = Astro.props;
+---
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <link rel="stylesheet" href={`${import.meta.env.BASE_URL}styles.css`} />
+  </head>
+  <body>
+    <header>
+      <nav>
+        <a href={import.meta.env.BASE_URL}>Nexora</a>
+        <a href={`${import.meta.env.BASE_URL}test/`}>Test de positionnement</a>
+        <a href={`${import.meta.env.BASE_URL}lecons/`}>Leçons</a>
+      </nav>
+    </header>
+    <main>
+      <slot />
+    </main>
+  </body>
+</html>

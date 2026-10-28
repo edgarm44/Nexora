@@ -1,0 +1,26 @@
+:root {
+  color-scheme: light dark;
+  --fg: #1b1b1f;
+  --bg: #ffffff;
+  --accent: #2e6de0;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --fg: #e8e8ea; --bg: #141418; }
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  color: var(--fg);
+  background: var(--bg);
+  line-height: 1.5;
+}
+header nav {
+  display: flex;
+  gap: 1.25rem;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--fg) 15%, transparent);
+}
+header nav a { color: var(--fg); text-decoration: none; font-weight: 600; }
+header nav a:hover { color: var(--accent); }
+main { max-width: 720px; margin: 0 auto; padding: 2rem 1.5rem; }
