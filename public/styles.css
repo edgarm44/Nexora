@@ -1,26 +1,170 @@
 :root {
-  color-scheme: light dark;
-  --fg: #1b1b1f;
-  --bg: #ffffff;
-  --accent: #2e6de0;
+  --bg: #0b0f19;
+  --bg-soft: #121829;
+  --panel: #161d2f;
+  --border: rgba(255, 255, 255, 0.08);
+  --fg: #eef1f8;
+  --fg-dim: #9aa4bf;
+  --py-blue: #4b8bbe;
+  --py-blue-light: #67b3e8;
+  --py-yellow: #ffd43b;
+  --radius: 14px;
 }
-@media (prefers-color-scheme: dark) {
-  :root { --fg: #e8e8ea; --bg: #141418; }
-}
+
 * { box-sizing: border-box; }
+
+html, body { height: 100%; }
+
 body {
   margin: 0;
-  font-family: system-ui, sans-serif;
+  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
   color: var(--fg);
-  background: var(--bg);
-  line-height: 1.5;
+  background:
+    radial-gradient(900px 500px at 15% -10%, rgba(75, 139, 190, 0.25), transparent 60%),
+    radial-gradient(700px 500px at 100% 0%, rgba(255, 212, 59, 0.10), transparent 55%),
+    var(--bg);
+  background-attachment: fixed;
+  line-height: 1.6;
 }
+
+/* léger motif de code en fond, très discret */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image:
+    repeating-linear-gradient(90deg, var(--fg) 0 1px, transparent 1px 160px),
+    repeating-linear-gradient(0deg, var(--fg) 0 1px, transparent 1px 160px);
+  z-index: 0;
+}
+
+header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  backdrop-filter: blur(10px);
+  background: rgba(11, 15, 25, 0.75);
+  border-bottom: 1px solid var(--border);
+}
+
 header nav {
+  max-width: 920px;
+  margin: 0 auto;
   display: flex;
-  gap: 1.25rem;
+  align-items: center;
+  gap: 1.75rem;
   padding: 1rem 1.5rem;
-  border-bottom: 1px solid color-mix(in srgb, var(--fg) 15%, transparent);
 }
-header nav a { color: var(--fg); text-decoration: none; font-weight: 600; }
-header nav a:hover { color: var(--accent); }
-main { max-width: 720px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+header nav a {
+  color: var(--fg-dim);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: color 0.15s ease;
+}
+
+header nav a:first-child {
+  color: var(--fg);
+  font-family: "Cascadia Code", "Fira Code", ui-monospace, monospace;
+  font-size: 1.1rem;
+  letter-spacing: 0.02em;
+  margin-right: auto;
+}
+
+header nav a:first-child::before {
+  content: ">>> ";
+  color: var(--py-yellow);
+}
+
+header nav a:hover { color: var(--py-blue-light); }
+
+main {
+  position: relative;
+  z-index: 1;
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 4rem 1.5rem 5rem;
+}
+
+h1 {
+  font-size: clamp(2.2rem, 5vw, 3.2rem);
+  margin: 0 0 0.75rem;
+  background: linear-gradient(90deg, var(--fg) 20%, var(--py-blue-light) 60%, var(--py-yellow) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+main > p {
+  color: var(--fg-dim);
+  font-size: 1.15rem;
+  max-width: 48ch;
+}
+
+/* bouton principal */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+  padding: 0.85rem 1.6rem;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 1.02rem;
+  text-decoration: none;
+  color: #0b0f19;
+  background: linear-gradient(90deg, var(--py-yellow), var(--py-blue-light));
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.06), 0 10px 30px -10px rgba(75, 139, 190, 0.55);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.1), 0 14px 36px -8px rgba(255, 212, 59, 0.45);
+}
+
+.btn:active { transform: translateY(0); }
+
+.btn-ghost {
+  display: inline-flex;
+  margin-top: 1.5rem;
+  margin-right: 0.75rem;
+  padding: 0.85rem 1.6rem;
+  border-radius: 999px;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--fg);
+  border: 1px solid var(--border);
+  background: var(--panel);
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.btn-ghost:hover { border-color: var(--py-blue); color: var(--py-blue-light); }
+
+/* cartes de contenu (test, leçons) */
+.card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.75rem;
+  margin-top: 2rem;
+}
+
+.card + .card { margin-top: 1rem; }
+
+.tag {
+  display: inline-block;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--py-yellow);
+  background: rgba(255, 212, 59, 0.1);
+  border: 1px solid rgba(255, 212, 59, 0.25);
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  margin-bottom: 0.75rem;
+}
