@@ -72,9 +72,20 @@ import Base from "../../../layouts/Base.astro";
     },
     {
       id: "u5",
+      titre: "Les f-strings : insérer des variables dans du texte",
+      explication:
+        "Une f-string est une chaîne de texte précédée d'un <code>f</code>, dans laquelle on peut écrire une variable entre accolades <code>{...}</code> : elle est remplacée automatiquement par sa valeur. C'est plus lisible que d'enchaîner des virgules dans print().",
+      exemple: ['nom = "Ada"\nage = 25\nprint(f"{nom} a {age} ans")\n# Ada a 25 ans'],
+      consigne: "Que va afficher <code>print(f\"Résultat : {7 + 3}\")</code> ?",
+      type: "qcm",
+      options: ["Résultat : 7 + 3", "Résultat : {7 + 3}", "Résultat : 10", "Une erreur"],
+      bonneOption: 2,
+    },
+    {
+      id: "u5b",
       titre: "Mettre en forme un nombre avec une f-string",
       explication:
-        "Dans une f-string, <code>{valeur:.2f}</code> arrondit un nombre à 2 chiffres après la virgule. Le nombre après le point indique combien de décimales garder.",
+        "On peut aller plus loin : <code>{valeur:.2f}</code> arrondit un nombre à 2 chiffres après la virgule. Le nombre après le point (ici 2) indique combien de décimales garder.",
       exemple: ["pi = 3.14159\nprint(f\"{pi:.2f}\")\n# 3.14"],
       consigne: "Que va afficher <code>print(f\"{3.14159:.2f}\")</code> ?",
       type: "qcm",
