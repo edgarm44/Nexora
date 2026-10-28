@@ -21,6 +21,24 @@
 }
 
 * { box-sizing: border-box; }
+
+/* reset dur des contrôles natifs : plus aucun blanc/bleu système ne doit passer */
+button, input, select, textarea {
+  font: inherit;
+  color: inherit;
+  appearance: none;
+  -webkit-appearance: none;
+  background: none;
+  border: none;
+  margin: 0;
+}
+button { cursor: pointer; }
+button:disabled { cursor: default; }
+input:focus, button:focus, a:focus { outline: none; }
+input:focus-visible, button:focus-visible, a:focus-visible {
+  outline: 2px solid var(--yellow);
+  outline-offset: 2px;
+}
 html { color-scheme: dark; }
 html, body { height: 100%; }
 
@@ -194,10 +212,12 @@ main > p.lede {
 
 .btn-ghost {
   color: var(--ink);
-  background: transparent;
+  background: var(--bg-raised);
   border-color: var(--line-strong);
+  border-width: 1.5px;
 }
-.btn-ghost:hover { border-color: var(--blue); color: var(--blue); }
+.btn-ghost:hover { border-color: var(--blue); background: var(--blue-soft); color: var(--ink); transform: translateY(-1px); }
+.btn-ghost:active { transform: translateY(0); }
 
 /* ---------- terminal (héros + blocs de code) ---------- */
 
@@ -337,20 +357,22 @@ main > p.lede {
 .option {
   text-align: left;
   width: 100%;
-  padding: 0.85rem 1.1rem;
+  padding: 0.95rem 1.2rem;
   border-radius: var(--radius-sm);
-  border: 1px solid var(--line);
+  border: 1.5px solid var(--line-strong);
   background: var(--bg-sunken);
   color: var(--ink);
   font-size: 0.98rem;
   font-family: var(--font-mono);
-  cursor: pointer;
-  transition: border-color 0.15s ease, background 0.15s ease;
+  font-weight: 500;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.03) inset;
+  transition: border-color 0.15s ease, background 0.15s ease, transform 0.12s ease;
 }
-.option:hover { border-color: var(--blue); }
-.option.bonne { border-color: var(--good); background: rgba(95, 201, 141, 0.1); }
-.option.mauvaise { border-color: var(--bad); background: rgba(226, 105, 92, 0.1); }
-.option:disabled { cursor: default; }
+.option:hover:not(:disabled) { border-color: var(--blue); background: var(--blue-soft); transform: translateX(2px); }
+.option.bonne { border-color: var(--good); background: rgba(95, 201, 141, 0.16); color: #d6f5e3; }
+.option.mauvaise { border-color: var(--bad); background: rgba(226, 105, 92, 0.16); color: #fbdbd7; }
+.option:disabled { opacity: 1; }
+.option:disabled:not(.bonne):not(.mauvaise) { opacity: 0.45; }
 
 .resultat h2 { margin-bottom: 0.3rem; }
 .resultat .niveau-mot { color: var(--yellow); }
@@ -361,13 +383,18 @@ main > p.lede {
   font-family: var(--font-mono);
   font-size: 0.98rem;
   width: 100%;
-  padding: 0.75rem 1rem;
+  padding: 0.8rem 1.1rem;
   border-radius: var(--radius-sm);
-  border: 1px solid var(--line-strong);
+  border: 1.5px solid var(--line-strong);
   background: var(--bg-sunken);
   color: var(--ink);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
-.champ-reponse:focus { outline: 2px solid var(--blue); outline-offset: 1px; }
+.champ-reponse::placeholder { color: var(--ink-faint); }
+.champ-reponse:focus {
+  border-color: var(--yellow);
+  box-shadow: 0 0 0 3px var(--yellow-soft);
+}
 
 .retour {
   margin-top: 0.8rem;
@@ -402,12 +429,18 @@ main > p.lede {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  margin-top: 0.9rem;
-  font-family: var(--font-mono);
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--yellow);
+  margin-top: 1.1rem;
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--bg-sunken);
+  background: var(--yellow);
+  padding: 0.45rem 0.95rem;
+  border-radius: var(--radius-sm);
+  box-shadow: 0 6px 16px -8px rgba(242, 201, 76, 0.5);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
+.carte-niveau:hover .suite { transform: translateX(2px); box-shadow: 0 8px 20px -6px rgba(242, 201, 76, 0.65); }
 
 .carte-niveau.verrouille {
   border-style: dashed;
@@ -416,7 +449,14 @@ main > p.lede {
 .carte-niveau.verrouille:hover { border-color: var(--line-strong); transform: none; }
 .carte-niveau.verrouille .glyphe { color: var(--ink-faint); background: transparent; border: 1px solid var(--line-strong); }
 .carte-niveau.verrouille h3 { color: var(--ink-dim); }
-.carte-niveau.verrouille .suite { color: var(--ink-faint); font-weight: 500; }
+.carte-niveau.verrouille .suite {
+  color: var(--ink-faint);
+  font-weight: 600;
+  background: transparent;
+  border: 1.5px dashed var(--line-strong);
+  box-shadow: none;
+}
+.carte-niveau.verrouille:hover .suite { transform: none; box-shadow: none; }
 
 /* ---------- unité exercice (mini-leçon + exercice en un bloc) ---------- */
 
