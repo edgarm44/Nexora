@@ -7,7 +7,7 @@ const niveaux = [
   { id: "intermediaire", glyphe: ">_", nom: "Intermédiaire", desc: "Conditions, boucles, logique de base.", href: `${base}lecons/intermediaire/` },
   { id: "confirme", glyphe: "{ }", nom: "Confirmé", desc: "Fonctions, listes, dictionnaires, un vrai terminal.", href: `${base}lecons/confirme/` },
   { id: "expert", glyphe: "#!", nom: "Expert", desc: "Classes, exceptions, modules, un aperçu du HTML.", href: `${base}lecons/expert/` },
-  { id: "web", glyphe: "</>", nom: "Web", desc: "Construire une vraie page HTML, avec aperçu en direct.", href: `${base}lecons/web/` },
+  { id: "web", glyphe: "</>", nom: "Maître", desc: "Construire une vraie page HTML, avec aperçu en direct.", href: `${base}lecons/web/` },
   { id: "algorithmes", glyphe: "ƒ(x)", nom: "Algorithmes", desc: "Compréhensions, lambda, map/filter, récursivité, tri personnalisé.", href: `${base}lecons/algorithmes/` },
   { id: "donnees", glyphe: "{...}", nom: "Données", desc: "Tuples, ensembles, formatage de texte, JSON.", href: `${base}lecons/donnees/` },
   { id: "projet", glyphe: "*", nom: "Projet", desc: "Générateurs, gestion complète des erreurs, mini-projet final.", href: `${base}lecons/projet/` },
@@ -33,6 +33,17 @@ const niveaux = [
         <span class="suite" data-suite>Verrouillé</span>
       </a>
     ))}
+  </div>
+
+  <div class="carte" id="sauvegarde" style="margin-top: 2rem;">
+    <span class="commentaire">pas de compte</span>
+    <p style="margin: 0.5rem 0 1rem; color: var(--ink-dim);">Ta progression est gardée uniquement dans ce navigateur. Si tu changes d'appareil, ou si tu veux faire une copie de sécurité, exporte-la dans un fichier.</p>
+    <div class="actions">
+      <button class="btn-ghost" id="btn-exporter" type="button">Exporter ma progression</button>
+      <label class="btn-ghost" for="champ-import" style="cursor: pointer;">Importer une sauvegarde</label>
+      <input type="file" id="champ-import" accept=".json,application/json" style="display:none;" />
+    </div>
+    <p class="retour" id="retour-sauvegarde" style="margin-top: 0.8rem;"></p>
   </div>
 </Base>
 
@@ -104,5 +115,58 @@ const niveaux = [
         carte.appendChild(pastille);
       }
     }
+  });
+
+  // Export / import de la progression (pas de compte = tout est dans ce navigateur)
+  const retourSauvegarde = document.getElementById("retour-sauvegarde")!;
+
+  document.getElementById("btn-exporter")!.addEventListener("click", () => {
+    const donnees: Record<string, unknown> = {
+      nexora_export: true,
+      date: new Date().toISOString(),
+      niveau: localStorage.getItem("nexora_niveau"),
+      progres: Object.fromEntries(ORDRE.map((id) => [id, progres(id)])),
+    };
+    const blob = new Blob([JSON.stringify(donnees, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const lien = document.createElement("a");
+    lien.href = url;
+    lien.download = "nexora-progression.json";
+    document.body.appendChild(lien);
+    lien.click();
+    lien.remove();
+    URL.revokeObjectURL(url);
+    retourSauvegarde.textContent = "Fichier téléchargé.";
+    retourSauvegarde.className = "retour ok";
+  });
+
+  document.getElementById("champ-import")!.addEventListener("change", (e) => {
+    const fichier = (e.target as HTMLInputElement).files?.[0];
+    if (!fichier) return;
+    const lecteur = new FileReader();
+    lecteur.onload = () => {
+      try {
+        const donnees = JSON.parse(String(lecteur.result));
+        if (!donnees || typeof donnees !== "object" || !donnees.progres) {
+          throw new Error("format invalide");
+        }
+        if (typeof donnees.niveau === "string") {
+          localStorage.setItem("nexora_niveau", donnees.niveau);
+        }
+        for (const id of ORDRE) {
+          const liste = donnees.progres[id];
+          if (Array.isArray(liste)) {
+            localStorage.setItem(`nexora_progres_${id}`, JSON.stringify(liste));
+          }
+        }
+        retourSauvegarde.textContent = "Progression restaurée. La page va se recharger.";
+        retourSauvegarde.className = "retour ok";
+        setTimeout(() => location.reload(), 900);
+      } catch {
+        retourSauvegarde.textContent = "Ce fichier ne ressemble pas à une sauvegarde Nexora valide.";
+        retourSauvegarde.className = "retour ko";
+      }
+    };
+    lecteur.readAsText(fichier);
   });
 </script>

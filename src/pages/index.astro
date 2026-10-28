@@ -17,6 +17,15 @@ const base = import.meta.env.BASE_URL;
         <a class="btn" href={`${base}test/`}>Trouver mon niveau</a>
         <a class="btn-ghost" href={`${base}lecons/`}>Voir les leçons</a>
       </div>
+
+      <div class="carte accueil-progres" id="accueil-progres" style="display:none; margin-top: 1.5rem;">
+        <span class="commentaire">ta progression</span>
+        <p id="accueil-progres-texte" style="margin: 0.5rem 0 0; color: var(--ink-dim);"></p>
+        <div class="progres-barre"><span id="accueil-progres-remplissage" style="width: 0%;"></span></div>
+        <div class="actions" style="margin-top: 1rem;">
+          <a class="btn-ghost" href={`${base}lecons/`}>Continuer mes exercices</a>
+        </div>
+      </div>
     </div>
 
     <div class="terminal" aria-hidden="true">
@@ -29,6 +38,36 @@ const base = import.meta.env.BASE_URL;
 </Base>
 
 <script>
+  const ORDRE = ["debutant", "intermediaire", "confirme", "expert", "web", "algorithmes", "donnees", "projet"];
+  const TOTAUX: Record<string, number> = { debutant: 7, intermediaire: 8, confirme: 8, expert: 9, web: 7, algorithmes: 8, donnees: 8, projet: 8 };
+
+  function progres(niveauId: string): string[] {
+    try {
+      return JSON.parse(localStorage.getItem(`nexora_progres_${niveauId}`) ?? "[]");
+    } catch {
+      return [];
+    }
+  }
+
+  const niveauTrouve = localStorage.getItem("nexora_niveau");
+  if (niveauTrouve) {
+    const totalGeneral = Object.values(TOTAUX).reduce((a, b) => a + b, 0);
+    const faitGeneral = ORDRE.reduce((acc, id) => acc + Math.min(progres(id).length, TOTAUX[id]), 0);
+    const pourcentage = Math.round((faitGeneral / totalGeneral) * 100);
+
+    const bloc = document.getElementById("accueil-progres")!;
+    const texte = document.getElementById("accueil-progres-texte")!;
+    const remplissage = document.getElementById("accueil-progres-remplissage")!;
+
+    bloc.style.display = "block";
+    if (faitGeneral >= totalGeneral) {
+      texte.textContent = `Les ${totalGeneral} exercices sont terminés. Bravo !`;
+    } else {
+      texte.textContent = `${faitGeneral} exercice${faitGeneral > 1 ? "s" : ""} sur ${totalGeneral} terminé${faitGeneral > 1 ? "s" : ""} (${pourcentage}%).`;
+    }
+    remplissage.style.width = `${pourcentage}%`;
+  }
+
   const lignes = [
     { num: 1, texte: 'nom = "toi"' },
     { num: 2, texte: 'print("Salut,", nom)' },
