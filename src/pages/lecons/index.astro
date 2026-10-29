@@ -109,6 +109,7 @@ const niveaux = [
       pseudo: localStorage.getItem("nexora_pseudo"),
       personnage: localStorage.getItem("nexora_personnage"),
       serieRecord: localStorage.getItem("nexora_serie_record"),
+      aRevoir: localStorage.getItem("nexora_a_revoir"),
       progres: Object.fromEntries(ORDRE.map((id) => [id, progres(id)])),
     };
     const blob = new Blob([JSON.stringify(donnees, null, 2)], { type: "application/json" });
@@ -142,6 +143,9 @@ const niveaux = [
         }
         if (typeof donnees.serieRecord === "string") {
           localStorage.setItem("nexora_serie_record", donnees.serieRecord);
+        }
+        if (typeof donnees.aRevoir === "string") {
+          localStorage.setItem("nexora_a_revoir", donnees.aRevoir);
         }
         for (const id of ORDRE) {
           const liste = donnees.progres[id];

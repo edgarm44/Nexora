@@ -70,6 +70,99 @@ function enregistrerEchecQcm() {
   localStorage.setItem("nexora_serie_actuelle", "0");
 }
 
+// Liste "à revoir" : pas un score, juste un repère des exercices pas encore
+// maîtrisés, pour réviser de façon ciblée. Se vide automatiquement quand
+// l'exercice est enfin réussi.
+interface EntreeARevoir {
+  titre: string;
+  href: string;
+  echecs: number;
+}
+
+function chargerARevoir(): Record<string, EntreeARevoir> {
+  try {
+    return JSON.parse(localStorage.getItem("nexora_a_revoir") ?? "{}");
+  } catch {
+    return {};
+  }
+}
+
+function enregistrerEchecExercice(cle: string, titre: string, href: string) {
+  const liste = chargerARevoir();
+  const existant = liste[cle];
+  liste[cle] = { titre, href, echecs: (existant?.echecs ?? 0) + 1 };
+  localStorage.setItem("nexora_a_revoir", JSON.stringify(liste));
+}
+
+function retirerARevoir(cle: string) {
+  const liste = chargerARevoir();
+  if (liste[cle]) {
+    delete liste[cle];
+    localStorage.setItem("nexora_a_revoir", JSON.stringify(liste));
+  }
+}
+
+// Traduit le message brut d'une erreur Python (Pyodide) en explication
+// comprehensible pour un debutant, sans jargon anglais.
+function traduireErreurPython(brut: string): string {
+  const correspondances: { motif: RegExp; message: (m: RegExpMatchArray) => string }[] = [
+    {
+      motif: /NameError: name '([^']+)' is not defined/,
+      message: (m) => `Tu utilises "${m[1]}" mais cette variable n'existe pas (encore). Vérifie que tu l'as bien créée avant, avec exactement la même orthographe.`,
+    },
+    {
+      motif: /IndentationError/,
+      message: () => `Problème d'indentation : en Python, les espaces au début des lignes comptent. Vérifie que les lignes à l'intérieur d'un bloc (après un ":") sont décalées de la même façon.`,
+    },
+    {
+      motif: /SyntaxError/,
+      message: () => `Erreur de syntaxe : il manque probablement une parenthèse, un ":" ou des guillemets quelque part dans ton code.`,
+    },
+    {
+      motif: /ZeroDivisionError/,
+      message: () => `Tu essaies de diviser par zéro, ce qui est impossible.`,
+    },
+    {
+      motif: /IndexError/,
+      message: () => `Tu essaies d'accéder à un élément qui n'existe pas dans ta liste (l'indice demandé est trop grand, ou la liste est vide).`,
+    },
+    {
+      motif: /KeyError: '([^']+)'/,
+      message: (m) => `La clé "${m[1]}" n'existe pas dans ce dictionnaire. Vérifie son orthographe.`,
+    },
+    {
+      motif: /AttributeError: '(\w+)' object has no attribute '(\w+)'/,
+      message: (m) => `Un objet de type "${m[1]}" n'a pas de "${m[2]}". Vérifie le nom de la méthode ou de l'attribut que tu utilises.`,
+    },
+    {
+      motif: /TypeError: unsupported operand type/,
+      message: () => `Tu mélanges deux types incompatibles (par exemple un texte et un nombre) dans une opération. Vérifie le type de tes variables.`,
+    },
+    {
+      motif: /TypeError: \w+\(\) missing \d+ required positional argument/,
+      message: () => `Il manque un ou plusieurs arguments quand tu appelles cette fonction. Regarde combien de paramètres elle attend.`,
+    },
+    {
+      motif: /TypeError/,
+      message: () => `Il y a une incompatibilité de type : tu mélanges probablement un texte, un nombre ou une liste d'une façon qui n'est pas permise.`,
+    },
+    {
+      motif: /ValueError/,
+      message: () => `La valeur donnée n'est pas celle attendue ici (par exemple, convertir en nombre un texte qui n'en est pas un).`,
+    },
+    {
+      motif: /ModuleNotFoundError|ImportError/,
+      message: () => `Ce module n'est pas disponible ici. Utilise uniquement les outils proposés dans l'exercice.`,
+    },
+  ];
+
+  for (const { motif, message } of correspondances) {
+    const m = brut.match(motif);
+    if (m) return message(m);
+  }
+  return "Il y a une erreur dans ton code. Le message technique ci-dessus indique en général le type de problème et parfois la ligne concernée.";
+}
+
 function blocCode(blocs: string[]) {
   return blocs
     .map((bloc) => {
@@ -95,6 +188,8 @@ function blocCode(blocs: string[]) {
 export function initExercices(opts: OptionsMoteur) {
   const body = document.getElementById(opts.corpsId)!;
   const progress = document.getElementById(opts.progressionId)!;
+  const niveauId = opts.cleProgres.replace("nexora_progres_", "");
+  const hrefNiveau = `${opts.base}lecons/${niveauId}/`;
   let current = 0;
 
   function progresActuel(): string[] {
@@ -106,6 +201,7 @@ export function initExercices(opts: OptionsMoteur) {
   }
 
   function marquerTermine(id: string) {
+    retirerARevoir(`${opts.cleProgres}:${id}`);
     const fait = progresActuel();
     if (!fait.includes(id)) {
       fait.push(id);
@@ -192,6 +288,7 @@ export function initExercices(opts: OptionsMoteur) {
             btn.classList.add("mauvaise");
             boutons[u.bonneOption!].classList.add("bonne");
             enregistrerEchecQcm();
+            enregistrerEchecExercice(`${opts.cleProgres}:${u.id}`, u.titre, hrefNiveau);
           }
           proposerSuite(correct);
         });
@@ -217,6 +314,7 @@ export function initExercices(opts: OptionsMoteur) {
         } else {
           retour.textContent = u.indiceErreur ?? "Essaie encore.";
           retour.className = "retour ko";
+          enregistrerEchecExercice(`${opts.cleProgres}:${u.id}`, u.titre, hrefNiveau);
         }
       }
 
@@ -291,11 +389,14 @@ export function initExercices(opts: OptionsMoteur) {
             document.getElementById("btn-suivant")!.addEventListener("click", avancer);
           } else {
             suite.innerHTML = `<p class="retour ko" style="margin-top: 1rem;">${u.indiceCode ?? "Ce n'est pas encore le résultat attendu."}</p>`;
+            enregistrerEchecExercice(`${opts.cleProgres}:${u.id}`, u.titre, hrefNiveau);
           }
         } catch (err: any) {
+          const brut = String(err?.message ?? err).split("\n").pop() ?? "Erreur";
           sortie.className = "terminal-sortie erreur";
-          sortie.textContent = String(err?.message ?? err).split("\n").pop() ?? "Erreur";
-          suite.innerHTML = `<p class="retour ko" style="margin-top: 1rem;">Il y a une erreur dans le code. Relis le message ci-dessus et corrige-le.</p>`;
+          sortie.textContent = brut;
+          suite.innerHTML = `<p class="retour ko" style="margin-top: 1rem;">${traduireErreurPython(brut)}</p>`;
+          enregistrerEchecExercice(`${opts.cleProgres}:${u.id}`, u.titre, hrefNiveau);
         } finally {
           btnRun.disabled = false;
           btnRun.textContent = "▶ Exécuter";
@@ -334,6 +435,7 @@ export function initExercices(opts: OptionsMoteur) {
         } else {
           retour.textContent = u.indiceHtml ?? "Ce n'est pas encore ça.";
           retour.className = "retour ko";
+          enregistrerEchecExercice(`${opts.cleProgres}:${u.id}`, u.titre, hrefNiveau);
         }
       });
     }

@@ -32,6 +32,12 @@ const NIVEAUX = [
     <p id="titre-actuel" style="margin: 0.6rem 0 0; font-family: var(--font-head); font-weight: 700; font-size: 1.3rem;"></p>
   </div>
 
+  <div class="carte" style="margin-top: 1.5rem;" id="carte-a-revoir">
+    <span class="commentaire">à revoir</span>
+    <p style="margin: 0.6rem 0 1rem; color: var(--ink-dim);">Les exercices où tu t'es trompé au moins une fois, pas encore réussis depuis. Ça disparaît automatiquement dès que tu les réussis.</p>
+    <div id="liste-a-revoir"></div>
+  </div>
+
   <div class="carte" style="margin-top: 1.5rem;">
     <span class="commentaire">personnage</span>
     <p style="margin: 0.6rem 0 1.1rem; color: var(--ink-dim);">Un personnage se débloque avec son niveau. Clique sur celui que tu veux porter.</p>
@@ -98,6 +104,31 @@ const NIVEAUX = [
     if (debloque(id)) titreId = id;
   }
   document.getElementById("titre-actuel")!.textContent = NOMS[titreId];
+
+  // --- à revoir ---
+  type EntreeARevoir = { titre: string; href: string; echecs: number };
+  function chargerARevoir(): Record<string, EntreeARevoir> {
+    try {
+      return JSON.parse(localStorage.getItem("nexora_a_revoir") ?? "{}");
+    } catch {
+      return {};
+    }
+  }
+  const zoneARevoir = document.getElementById("liste-a-revoir")!;
+  const entreesARevoir = Object.values(chargerARevoir()).sort((a, b) => b.echecs - a.echecs);
+  if (entreesARevoir.length === 0) {
+    zoneARevoir.innerHTML = `<p style="color: var(--ink-dim); margin: 0;">Rien à revoir pour l'instant.</p>`;
+  } else {
+    zoneARevoir.innerHTML = entreesARevoir
+      .map(
+        (e) => `
+        <div class="proposition">
+          <p>${e.titre.replace(/</g, "&lt;")}</p>
+          <a class="btn-ghost" style="padding: 0.35rem 0.8rem; font-size: 0.82rem;" href="${e.href}">Revoir</a>
+        </div>`
+      )
+      .join("");
+  }
 
   // --- personnage ---
   let personnageActuel = localStorage.getItem("nexora_personnage") ?? "debutant";
