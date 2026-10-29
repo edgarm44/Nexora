@@ -33,6 +33,11 @@ const NIVEAUX = [
     <p id="titre-actuel" style="margin: 0.6rem 0 0; font-family: var(--font-head); font-weight: 700; font-size: 1.3rem;"></p>
   </div>
 
+  <div class="carte" style="margin-top: 1.5rem;" id="carte-serie">
+    <span class="commentaire">série en cours</span>
+    <p id="serie-actuelle" style="margin: 0.6rem 0 0; font-family: var(--font-head); font-weight: 700; font-size: 1.3rem;"></p>
+  </div>
+
   <div class="carte" style="margin-top: 1.5rem;" id="carte-a-revoir">
     <span class="commentaire">à revoir</span>
     <p style="margin: 0.6rem 0 1rem; color: var(--ink-dim);">Les exercices où tu t'es trompé au moins une fois, pas encore réussis depuis. Ça disparaît automatiquement dès que tu les réussis.</p>
@@ -85,6 +90,13 @@ const NIVEAUX = [
     if (debloque(id)) titreId = id;
   }
   document.getElementById("titre-actuel")!.textContent = NOMS[titreId];
+
+  const serieActuelle = Number(localStorage.getItem("nexora_serie_actuelle") ?? "0");
+  const zoneSerie = document.getElementById("serie-actuelle")!;
+  zoneSerie.textContent =
+    serieActuelle >= 2
+      ? `🔥 ${serieActuelle} bonnes réponses d'affilée`
+      : "Réponds juste à deux exercices de suite pour démarrer une série.";
 
   // --- à revoir ---
   type EntreeARevoir = { titre: string; href: string; echecs: number };

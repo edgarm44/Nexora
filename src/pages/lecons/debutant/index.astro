@@ -127,6 +127,19 @@ import Base from "../../../layouts/Base.astro";
       bonneOption: 1,
       explicationReponse: "La ligne qui commence par # est entièrement ignorée par Python : seul le print(\"Bienvenue\") est réellement exécuté.",
     },
+    {
+      id: "u9",
+      titre: "Comparer deux valeurs : True ou False",
+      explication:
+        "Avec ==, <, > ou >=, Python compare deux valeurs et répond toujours par True (vrai) ou False (faux). C'est la base de toutes les décisions qu'un programme peut prendre.",
+      exemple: ["age = 13", "print(age == 13)", "print(age > 18)"],
+      consigne: "Que va afficher print(10 > 7) ?",
+      code: ["print(10 > 7)"],
+      type: "qcm",
+      options: ["10", "7", "True", "False"],
+      bonneOption: 2,
+      explicationReponse: "10 est bien plus grand que 7, donc la comparaison 10 > 7 est vraie : Python affiche True, pas les nombres eux-mêmes.",
+    },
   ];
 
   initExercices({
@@ -136,7 +149,7 @@ import Base from "../../../layouts/Base.astro";
     progressionId: "exo-progress",
     base: import.meta.env.BASE_URL,
     titreFin: "Niveau débutant terminé",
-    texteFin: "Les huit exercices sont faits. Le niveau intermédiaire vient de se débloquer.",
+    texteFin: "Les neuf exercices sont faits. Le niveau intermédiaire vient de se débloquer.",
     retourHref: `${import.meta.env.BASE_URL}lecons/`,
   });
 </script>

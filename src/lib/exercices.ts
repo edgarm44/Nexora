@@ -232,11 +232,17 @@ export function initExercices(opts: OptionsMoteur) {
 
   function renderFin() {
     progress.innerHTML = "";
+    const serie = Number(localStorage.getItem("nexora_serie_actuelle") ?? "0");
+    const confettis = Array.from({ length: 16 })
+      .map((_, i) => `<span class="confetti" style="--i: ${i};"></span>`)
+      .join("");
     body.innerHTML = `
-      <div class="resultat">
+      <div class="resultat resultat-fin">
+        ${confettis}
         <span class="commentaire">bravo</span>
         <h2>${opts.titreFin}</h2>
         <p style="color: var(--ink-dim);">${opts.texteFin}</p>
+        ${serie >= 2 ? `<p class="serie-fin">🔥 ${serie} bonnes réponses d'affilée</p>` : ""}
         <div class="actions"><a class="btn" href="${opts.retourHref}">Retour aux niveaux</a></div>
       </div>
     `;
@@ -344,12 +350,23 @@ export function initExercices(opts: OptionsMoteur) {
       const sortie = document.getElementById("sortie")!;
       const statut = document.getElementById("statut-pyodide")!;
 
+      let pyodideEnCours = true;
+      const alerteLenteur = setTimeout(() => {
+        if (pyodideEnCours) {
+          statut.textContent = "ça prend plus de temps que prévu…";
+        }
+      }, 12000);
+
       chargerPyodide()
         .then(() => {
+          pyodideEnCours = false;
+          clearTimeout(alerteLenteur);
           statut.textContent = "prêt";
           btnRun.disabled = false;
         })
         .catch(() => {
+          pyodideEnCours = false;
+          clearTimeout(alerteLenteur);
           statut.textContent = "indisponible";
           sortie.textContent = "Impossible de charger Python dans le navigateur pour l'instant. Réessaie dans un instant, ou vérifie ta connexion.";
           sortie.className = "terminal-sortie erreur";

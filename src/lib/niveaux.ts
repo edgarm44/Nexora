@@ -17,7 +17,7 @@ export const ORDRE: string[] = [
 ];
 
 export const TOTAUX_PAR_NIVEAU: Record<string, number> = {
-  debutant: 8,
+  debutant: 9,
   intermediaire: 9,
   confirme: 9,
   expert: 10,

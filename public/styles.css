@@ -789,46 +789,6 @@ main > p.lede {
 .badge-titre { margin: 0 0 0.15rem; font-weight: 700; }
 .badge-desc { margin: 0; color: var(--ink-dim); font-size: 0.88rem; }
 
-/* ---------- idées ---------- */
-
-.liste-idees { display: grid; gap: 1rem; }
-.carte-idee .idee-titre { margin: 0 0 0.3rem; font-weight: 700; font-size: 1.05rem; }
-.carte-idee .idee-desc { margin: 0 0 1rem; color: var(--ink-dim); font-size: 0.92rem; }
-
-.vote-boutons { display: flex; flex-wrap: wrap; gap: 0.6rem; }
-.vote-btn {
-  border: 1.5px solid var(--line-strong);
-  background: var(--bg-sunken);
-  color: var(--ink-dim);
-  border-radius: var(--radius-sm);
-  padding: 0.5rem 0.9rem;
-  font-size: 0.88rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
-}
-.vote-btn:hover { border-color: var(--blue); color: var(--ink); }
-.vote-btn.actif { border-color: var(--yellow); background: var(--yellow-soft); color: var(--ink); }
-
-.proposition {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-  padding: 0.6rem 0;
-  border-top: 1px solid var(--line);
-}
-.proposition p { margin: 0; color: var(--ink-dim); font-size: 0.9rem; overflow-wrap: anywhere; min-width: 0; flex: 1 1 auto; }
-.lien-supprimer {
-  background: none;
-  border: none;
-  color: var(--bad);
-  font-size: 0.8rem;
-  cursor: pointer;
-  flex: none;
-  text-decoration: underline;
-}
-
 /* ---------- badge profil (en-tete) ---------- */
 
 .profil-barre {
@@ -866,4 +826,37 @@ main > p.lede {
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
+}
+
+/* ---------- confettis de fin de niveau ---------- */
+
+.resultat-fin {
+  position: relative;
+  overflow: visible;
+}
+.confetti {
+  position: absolute;
+  top: -0.5rem;
+  left: calc(5% + (var(--i) * 6%));
+  width: 7px;
+  height: 7px;
+  border-radius: 1px;
+  background: var(--yellow);
+  opacity: 0;
+  animation: tomber-confetti 1.1s ease-out forwards;
+  animation-delay: calc(var(--i) * 45ms);
+}
+.confetti:nth-child(3n) { background: var(--blue); }
+.confetti:nth-child(3n + 1) { background: var(--good); }
+@keyframes tomber-confetti {
+  0% { opacity: 1; transform: translateY(0) rotate(0deg); }
+  100% { opacity: 0; transform: translateY(70px) rotate(220deg); }
+}
+.serie-fin {
+  margin-top: 0.6rem;
+  font-weight: 600;
+  color: var(--yellow);
+}
+@media (prefers-reduced-motion: reduce) {
+  .confetti { animation: none; opacity: 0; }
 }
