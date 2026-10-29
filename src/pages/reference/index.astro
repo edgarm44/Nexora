@@ -1,0 +1,142 @@
+---
+import Base from "../../layouts/Base.astro";
+---
+<Base title="Nexora — Aide-mémoire Python" description="Nexora : un aide-mémoire Python sous forme de questions rapides, pour réviser la syntaxe déjà apprise sans suivre un parcours.">
+  <span class="commentaire">référence</span>
+  <h1>Aide-mémoire Python</h1>
+  <p class="lede">Pas un nouveau niveau à débloquer : juste des questions rapides pour réviser la syntaxe de base, dans l'ordre que tu veux, autant de fois que tu veux.</p>
+
+  <div class="carte" id="exo-card">
+    <div class="progression" id="exo-progress"></div>
+    <div id="exo-body"></div>
+  </div>
+</Base>
+
+<script>
+  import { initExercices, type Unite } from "../../lib/exercices";
+
+  const UNITES: Unite[] = [
+    {
+      id: "u1",
+      titre: "Afficher une valeur",
+      explication: "print() affiche quelque chose à l'écran. On peut lui donner du texte (entre guillemets) ou une variable.",
+      exemple: ['print("Salut")', "x = 5\nprint(x)"],
+      consigne: "Que fait print(x) si x = 5 ?",
+      type: "qcm",
+      options: ["Affiche 5", 'Affiche "x"', "Affiche rien", "Donne une erreur"],
+      bonneOption: 0,
+      explicationReponse: "print(x) affiche la valeur contenue dans la variable x, ici 5 — pas le mot \"x\".",
+    },
+    {
+      id: "u2",
+      titre: "Les types de base",
+      explication: "Les types de base en Python : int (nombre entier), float (nombre à virgule), str (texte), bool (True/False). La fonction type() permet de vérifier le type d'une valeur.",
+      exemple: ['type(5)', 'type("bonjour")'],
+      consigne: "Quel est le type de la valeur 3.14 ?",
+      type: "qcm",
+      options: ["float", "int", "str", "bool"],
+      bonneOption: 0,
+      explicationReponse: "Un nombre avec une virgule (décimal) est un float. Un nombre entier sans virgule est un int.",
+    },
+    {
+      id: "u3",
+      titre: "La condition if/elif/else",
+      explication: "if teste une condition. elif ajoute une autre condition si la première est fausse. else s'exécute si aucune condition n'est vraie.",
+      exemple: ["if x > 0:\n    print(\"positif\")\nelif x == 0:\n    print(\"zero\")\nelse:\n    print(\"negatif\")"],
+      consigne: "Si x = 0, quelle ligne va s'afficher ?",
+      type: "qcm",
+      options: ['"zero"', '"positif"', '"negatif"', "Rien du tout"],
+      bonneOption: 0,
+      explicationReponse: "x == 0 correspond exactement au elif, donc \"zero\" s'affiche.",
+    },
+    {
+      id: "u4",
+      titre: "La boucle for avec range()",
+      explication: "for i in range(n): répète un bloc n fois, avec i qui prend les valeurs 0, 1, 2, ... jusqu'à n-1. range(5) donne donc 0, 1, 2, 3, 4.",
+      exemple: ["for i in range(3):\n    print(i)"],
+      consigne: "Combien de fois ce code va-t-il afficher une ligne, avec range(3) ?",
+      type: "qcm",
+      options: ["3 fois (0, 1, 2)", "4 fois (0, 1, 2, 3)", "2 fois (0, 1)", "3 fois (1, 2, 3)"],
+      bonneOption: 0,
+      explicationReponse: "range(3) produit 0, 1 et 2 — jamais 3. C'est un piège fréquent à retenir.",
+    },
+    {
+      id: "u5",
+      titre: "La boucle while",
+      explication: "while répète un bloc tant qu'une condition reste vraie. Attention à toujours faire évoluer la condition à l'intérieur de la boucle, sinon elle tourne à l'infini.",
+      exemple: ["x = 0\nwhile x < 3:\n    print(x)\n    x = x + 1"],
+      consigne: "Que se passe-t-il si on oublie la ligne \"x = x + 1\" ?",
+      type: "qcm",
+      options: ["La boucle tourne à l'infini", "La boucle s'arrête tout de suite", "Une erreur s'affiche", "Rien, le code marche pareil"],
+      bonneOption: 0,
+      explicationReponse: "Sans cette ligne, x reste toujours à 0, donc x < 3 est toujours vrai : la boucle ne s'arrête jamais.",
+    },
+    {
+      id: "u6",
+      titre: "Ajouter à une liste",
+      explication: "Une liste se crée avec des crochets : ma_liste = [1, 2, 3]. .append(valeur) ajoute un élément à la fin de la liste.",
+      exemple: ["fruits = [\"pomme\", \"poire\"]\nfruits.append(\"kiwi\")\nprint(fruits)"],
+      consigne: "Après fruits.append(\"kiwi\"), que contient la liste fruits ?",
+      type: "qcm",
+      options: ['["pomme", "poire", "kiwi"]', '["kiwi", "pomme", "poire"]', '["pomme", "poire"]', "Une erreur"],
+      bonneOption: 0,
+      explicationReponse: ".append() ajoute toujours l'élément à la fin de la liste, jamais au début.",
+    },
+    {
+      id: "u7",
+      titre: "Lire un dictionnaire",
+      explication: "Un dictionnaire associe des clés à des valeurs : eleve = {\"nom\": \"Léa\", \"age\": 13}. On accède à une valeur avec eleve[\"nom\"].",
+      exemple: ['eleve = {"nom": "Léa", "age": 13}\nprint(eleve["age"])'],
+      consigne: "Que va afficher print(eleve[\"age\"]) ?",
+      type: "qcm",
+      options: ["13", '"age"', '"Léa"', "Une erreur"],
+      bonneOption: 0,
+      explicationReponse: "eleve[\"age\"] va chercher la valeur associée à la clé \"age\", c'est-à-dire 13.",
+    },
+    {
+      id: "u8",
+      titre: "Définir une fonction",
+      explication: "def nom_fonction(paramètres): crée une fonction réutilisable. return renvoie une valeur à l'endroit où la fonction a été appelée.",
+      exemple: ["def carre(n):\n    return n * n\n\nresultat = carre(4)"],
+      consigne: "Quelle est la valeur de resultat après carre(4) ?",
+      type: "qcm",
+      options: ["16", "4", "8", "Aucune, il faut un print"],
+      bonneOption: 0,
+      explicationReponse: "carre(4) renvoie 4 * 4 = 16, qui est stocké dans resultat. Pas besoin de print pour que return fonctionne.",
+    },
+    {
+      id: "u9",
+      titre: "Gérer une erreur avec try/except",
+      explication: "try: contient du code qui pourrait provoquer une erreur. except: s'exécute seulement si une erreur se produit dans le bloc try, et empêche le programme de s'arrêter brutalement.",
+      exemple: ["try:\n    x = 10 / 0\nexcept:\n    print(\"Erreur évitée\")"],
+      consigne: "Que va afficher ce code ?",
+      type: "qcm",
+      options: ['"Erreur évitée"', "Une erreur qui arrête le programme", "10", "Rien"],
+      bonneOption: 0,
+      explicationReponse: "Diviser par zéro provoque une erreur, interceptée par except, qui affiche son message au lieu de planter le programme.",
+    },
+    {
+      id: "u10",
+      titre: "Insérer une variable dans du texte (f-string)",
+      explication: "Un f-string (f\"...\") permet d'insérer directement des variables dans du texte, entre accolades { }. C'est plus pratique que de tout assembler avec des +.",
+      exemple: ['nom = "Léa"\nprint(f"Bonjour {nom}")'],
+      consigne: "Qu'affiche print(f\"Bonjour {nom}\") si nom = \"Léa\" ?",
+      type: "qcm",
+      options: ["Bonjour Léa", "Bonjour {nom}", "Bonjour nom", "Une erreur"],
+      bonneOption: 0,
+      explicationReponse: "Le f devant les guillemets dit à Python de remplacer {nom} par la valeur de la variable nom.",
+    },
+  ];
+
+  initExercices({
+    unites: UNITES,
+    cleProgres: "nexora_progres_reference",
+    corpsId: "exo-body",
+    progressionId: "exo-progress",
+    base: import.meta.env.BASE_URL,
+    titreFin: "Aide-mémoire terminé",
+    texteFin: "Les dix questions sont faites. Reviens quand tu veux pour réviser à nouveau.",
+    retourHref: `${import.meta.env.BASE_URL}reference/`,
+    hrefRevoir: `${import.meta.env.BASE_URL}reference/`,
+  });
+</script>
