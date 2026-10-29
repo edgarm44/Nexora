@@ -1,7 +1,11 @@
 ---
-const { title = "Nexora" } = Astro.props;
+const {
+  title = "Nexora",
+  description = "Nexora : apprendre Python à partir de zéro, gratuitement et sans compte obligatoire. Des leçons courtes suivies d'exercices interactifs, pour progresser à son rythme.",
+} = Astro.props;
 const base = import.meta.env.BASE_URL;
 const path = Astro.url.pathname;
+const urlCanonique = new URL(path, Astro.site).toString();
 
 const onglets = [
   { href: base, label: "accueil.py", match: base },
@@ -21,6 +25,15 @@ function estActif(match: string) {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={urlCanonique} />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -36,6 +49,10 @@ function estActif(match: string) {
         <span class="feu"></span>
         <span class="feu"></span>
         <span class="chemin">~/nexora</span>
+        <a class="profil-barre" id="profil-barre" href={`${base}compte/`} style="display: none;">
+          <span class="avatar avatar-mini" id="profil-avatar"></span>
+          <span id="profil-pseudo"></span>
+        </a>
       </div>
       <nav class="onglets">
         {onglets.map((o) => (
@@ -48,6 +65,35 @@ function estActif(match: string) {
     <main>
       <slot />
     </main>
+    <script>
+      try {
+        const pseudo = localStorage.getItem("nexora_pseudo");
+        if (pseudo) {
+          const GLYPHES: Record<string, string> = {
+            debutant: ">",
+            intermediaire: ">_",
+            confirme: "{ }",
+            expert: "#!",
+            web: "</>",
+            algorithmes: "ƒ(x)",
+            donnees: "{...}",
+            projet: "*",
+          };
+          const personnage = localStorage.getItem("nexora_personnage") || "debutant";
+          const barre = document.getElementById("profil-barre");
+          const avatar = document.getElementById("profil-avatar");
+          const nomPseudo = document.getElementById("profil-pseudo");
+          if (barre && avatar && nomPseudo) {
+            avatar.textContent = GLYPHES[personnage] ?? ">";
+            avatar.className = `avatar avatar-mini avatar-${personnage}`;
+            nomPseudo.textContent = pseudo;
+            (barre as HTMLElement).style.display = "flex";
+          }
+        }
+      } catch {
+        // pas grave : le badge de profil est juste decoratif
+      }
+    </script>
     <footer>
       <p>Nexora — un projet pour apprendre Python, une ligne à la fois.</p>
     </footer>
