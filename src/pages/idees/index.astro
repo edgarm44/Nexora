@@ -1,0 +1,138 @@
+---
+import Base from "../../layouts/Base.astro";
+
+const IDEES = [
+  { id: "sons", titre: "Des effets sonores", desc: "Un petit son différent quand la réponse est juste ou fausse." },
+  { id: "anglais", titre: "Un parcours pour apprendre l'anglais", desc: "Le même principe de leçons courtes + exercices, mais pour l'anglais." },
+  { id: "projets", titre: "Plus de mini-projets guidés", desc: "Des petits projets complets (jeu, calculatrice, site perso) à construire pas à pas." },
+  { id: "chrono", titre: "Un défi chronométré", desc: "Une série de questions à résoudre le plus vite possible, pour s'entraîner." },
+  { id: "record-perso", titre: "Un suivi de tes records personnels", desc: "Voir sa meilleure série de bonnes réponses et son historique, toujours en local." },
+  { id: "imprimable", titre: "Des fiches de cours imprimables", desc: "Un résumé de chaque leçon en une page, à imprimer ou garder dans un coin." },
+  { id: "clavier", titre: "Des raccourcis clavier", desc: "Valider une réponse avec Entrée, naviguer avec les flèches, etc." },
+];
+---
+<Base title="Nexora — Idées">
+  <span class="commentaire">sondage</span>
+  <h1>Des idées pour Nexora</h1>
+  <p class="lede">Donne ton avis sur ce qui pourrait être ajouté au site, ou propose ta propre idée. Tout reste enregistré uniquement dans ce navigateur : il n'y a pas de serveur qui reçoit tes réponses.</p>
+
+  <div class="liste-idees" id="liste-idees" style="margin-top: 1.5rem;">
+    {IDEES.map((idee) => (
+      <div class="carte carte-idee" data-idee={idee.id}>
+        <p class="idee-titre">{idee.titre}</p>
+        <p class="idee-desc">{idee.desc}</p>
+        <div class="vote-boutons">
+          <button class="vote-btn" data-vote="oui" type="button">Oui, bonne idée</button>
+          <button class="vote-btn" data-vote="non" type="button">Non, pas pour moi</button>
+        </div>
+      </div>
+    ))}
+  </div>
+
+  <div class="carte" id="carte-proposition" style="margin-top: 1.5rem;">
+    <span class="commentaire">ta propre idée</span>
+    <p style="margin: 0.6rem 0 1rem; color: var(--ink-dim);">Une idée qui n'est pas dans la liste ? Note-la ici.</p>
+    <textarea class="champ-reponse" id="champ-proposition" rows="3" placeholder="Décris ton idée en une ou deux phrases..." style="width: 100%; resize: vertical;"></textarea>
+    <div class="actions" style="margin-top: 0.8rem;">
+      <button class="btn" id="btn-proposer" type="button">Enregistrer mon idée</button>
+    </div>
+    <p class="retour" id="retour-proposition" style="margin-top: 0.6rem;"></p>
+    <div id="mes-idees" style="margin-top: 1rem;"></div>
+  </div>
+</Base>
+
+<script>
+  type Votes = Record<string, "oui" | "non">;
+
+  function chargerVotes(): Votes {
+    try {
+      return JSON.parse(localStorage.getItem("nexora_idees_votes") ?? "{}");
+    } catch {
+      return {};
+    }
+  }
+
+  const votes = chargerVotes();
+
+  document.querySelectorAll<HTMLElement>(".carte-idee").forEach((carte) => {
+    const id = carte.dataset.idee!;
+    const boutons = carte.querySelectorAll<HTMLButtonElement>(".vote-btn");
+
+    function appliquerEtat() {
+      const choix = votes[id];
+      boutons.forEach((b) => {
+        b.classList.toggle("actif", b.dataset.vote === choix);
+      });
+    }
+    appliquerEtat();
+
+    boutons.forEach((bouton) => {
+      bouton.addEventListener("click", () => {
+        const choix = bouton.dataset.vote as "oui" | "non";
+        votes[id] = choix;
+        localStorage.setItem("nexora_idees_votes", JSON.stringify(votes));
+        appliquerEtat();
+      });
+    });
+  });
+
+  // --- propositions libres ---
+  function chargerPropositions(): string[] {
+    try {
+      const liste = JSON.parse(localStorage.getItem("nexora_idees_propositions") ?? "[]");
+      return Array.isArray(liste) ? liste : [];
+    } catch {
+      return [];
+    }
+  }
+
+  const zoneMesIdees = document.getElementById("mes-idees")!;
+
+  function afficherPropositions() {
+    const liste = chargerPropositions();
+    if (liste.length === 0) {
+      zoneMesIdees.innerHTML = "";
+      return;
+    }
+    zoneMesIdees.innerHTML =
+      '<p class="commentaire" style="margin-bottom: 0.6rem;">tes propositions</p>' +
+      liste
+        .map(
+          (texte, i) => `
+          <div class="proposition">
+            <p>${texte.replace(/</g, "&lt;")}</p>
+            <button class="lien-supprimer" data-index="${i}" type="button">Supprimer</button>
+          </div>`
+        )
+        .join("");
+
+    zoneMesIdees.querySelectorAll<HTMLButtonElement>(".lien-supprimer").forEach((bouton) => {
+      bouton.addEventListener("click", () => {
+        const i = Number(bouton.dataset.index);
+        const nouvelleListe = chargerPropositions();
+        nouvelleListe.splice(i, 1);
+        localStorage.setItem("nexora_idees_propositions", JSON.stringify(nouvelleListe));
+        afficherPropositions();
+      });
+    });
+  }
+  afficherPropositions();
+
+  const retourProposition = document.getElementById("retour-proposition")!;
+  document.getElementById("btn-proposer")!.addEventListener("click", () => {
+    const champ = document.getElementById("champ-proposition") as HTMLTextAreaElement;
+    const texte = champ.value.trim();
+    if (!texte) {
+      retourProposition.textContent = "Écris d'abord ton idée dans la case ci-dessus.";
+      retourProposition.className = "retour ko";
+      return;
+    }
+    const liste = chargerPropositions();
+    liste.push(texte);
+    localStorage.setItem("nexora_idees_propositions", JSON.stringify(liste));
+    champ.value = "";
+    retourProposition.textContent = "Idée enregistrée dans ce navigateur. Merci !";
+    retourProposition.className = "retour ok";
+    afficherPropositions();
+  });
+</script>

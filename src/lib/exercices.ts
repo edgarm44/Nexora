@@ -58,6 +58,18 @@ function normaliser(s: string) {
   return s.trim().replace(/\s+/g, " ").replace(/'/g, '"');
 }
 
+// Série de bonnes réponses d'affilée (pour les succès du compte, pas de score/XP)
+function enregistrerSucces() {
+  const actuelle = Number(localStorage.getItem("nexora_serie_actuelle") ?? "0") + 1;
+  localStorage.setItem("nexora_serie_actuelle", String(actuelle));
+  const record = Number(localStorage.getItem("nexora_serie_record") ?? "0");
+  if (actuelle > record) localStorage.setItem("nexora_serie_record", String(actuelle));
+}
+
+function enregistrerEchecQcm() {
+  localStorage.setItem("nexora_serie_actuelle", "0");
+}
+
 function blocCode(blocs: string[]) {
   return blocs
     .map((bloc) => {
@@ -98,6 +110,7 @@ export function initExercices(opts: OptionsMoteur) {
     if (!fait.includes(id)) {
       fait.push(id);
       localStorage.setItem(opts.cleProgres, JSON.stringify(fait));
+      enregistrerSucces();
     }
   }
 
@@ -178,6 +191,7 @@ export function initExercices(opts: OptionsMoteur) {
           } else {
             btn.classList.add("mauvaise");
             boutons[u.bonneOption!].classList.add("bonne");
+            enregistrerEchecQcm();
           }
           proposerSuite(correct);
         });

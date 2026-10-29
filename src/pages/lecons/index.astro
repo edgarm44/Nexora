@@ -18,12 +18,6 @@ const niveaux = [
   <h1>Les exercices</h1>
   <p class="lede">Pas de longs cours à lire : chaque notion tient en quelques phrases, suivies d'un exercice. Huit niveaux, dans l'ordre : chacun se débloque en terminant le précédent.</p>
 
-  <div class="carte" id="sans-test" style="display:none; margin-bottom: 1.5rem;">
-    <span class="commentaire">avant de commencer</span>
-    <p style="margin: 0 0 1rem; color: var(--ink-dim);">Passe d'abord le test de positionnement pour débloquer ton premier niveau.</p>
-    <div class="actions"><a class="btn" href={`${base}test/`}>Faire le test</a></div>
-  </div>
-
   <div class="grille-niveaux" id="niveaux">
     {niveaux.map((n) => (
       <a class="carte-niveau" data-niveau={n.id} data-href={n.href} href={n.href}>
@@ -64,21 +58,15 @@ const niveaux = [
     return total ? progres(niveauId).length >= total : false;
   }
 
-  const niveauTrouve = localStorage.getItem("nexora_niveau");
-  const rangTrouve = niveauTrouve ? ORDRE.indexOf(niveauTrouve) : -1;
-
-  if (!niveauTrouve) {
-    document.getElementById("sans-test")!.style.display = "block";
-  }
-
   document.querySelectorAll<HTMLAnchorElement>(".carte-niveau[data-niveau]").forEach((carte) => {
     const id = carte.getAttribute("data-niveau")!;
     const rang = ORDRE.indexOf(id);
     const total = TOTAUX_PAR_NIVEAU[id];
     const fait = progres(id).length;
 
-    const precedentOk = rang === 0 || estComplet(ORDRE[rang - 1]);
-    const debloque = rangTrouve >= 0 && (rang <= rangTrouve || precedentOk);
+    // Le premier niveau (Débutant) est toujours accessible. Les suivants se débloquent
+    // en terminant le niveau précédent — il n'y a plus de test de positionnement.
+    const debloque = rang === 0 || estComplet(ORDRE[rang - 1]);
 
     const suite = carte.querySelector("[data-suite]")!;
 
@@ -86,13 +74,11 @@ const niveaux = [
       carte.classList.add("verrouille");
       carte.removeAttribute("href");
       carte.addEventListener("click", (e) => e.preventDefault());
-      suite.textContent = rang === 0 ? "Fais le test" : "Verrouillé";
+      suite.textContent = "Verrouillé";
       return;
     }
 
     carte.setAttribute("href", carte.dataset.href!);
-
-    if (id === niveauTrouve) carte.classList.add("actif");
 
     if (fait >= total) {
       suite.textContent = "Revoir";
@@ -110,12 +96,6 @@ const niveaux = [
       carte.appendChild(pastille);
     } else {
       suite.textContent = "Commencer";
-      if (id === niveauTrouve) {
-        const pastille = document.createElement("span");
-        pastille.className = "pastille";
-        pastille.textContent = "ton niveau";
-        carte.appendChild(pastille);
-      }
     }
   });
 
@@ -126,7 +106,9 @@ const niveaux = [
     const donnees: Record<string, unknown> = {
       nexora_export: true,
       date: new Date().toISOString(),
-      niveau: localStorage.getItem("nexora_niveau"),
+      pseudo: localStorage.getItem("nexora_pseudo"),
+      personnage: localStorage.getItem("nexora_personnage"),
+      serieRecord: localStorage.getItem("nexora_serie_record"),
       progres: Object.fromEntries(ORDRE.map((id) => [id, progres(id)])),
     };
     const blob = new Blob([JSON.stringify(donnees, null, 2)], { type: "application/json" });
@@ -152,8 +134,14 @@ const niveaux = [
         if (!donnees || typeof donnees !== "object" || !donnees.progres) {
           throw new Error("format invalide");
         }
-        if (typeof donnees.niveau === "string") {
-          localStorage.setItem("nexora_niveau", donnees.niveau);
+        if (typeof donnees.pseudo === "string") {
+          localStorage.setItem("nexora_pseudo", donnees.pseudo);
+        }
+        if (typeof donnees.personnage === "string") {
+          localStorage.setItem("nexora_personnage", donnees.personnage);
+        }
+        if (typeof donnees.serieRecord === "string") {
+          localStorage.setItem("nexora_serie_record", donnees.serieRecord);
         }
         for (const id of ORDRE) {
           const liste = donnees.progres[id];

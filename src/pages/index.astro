@@ -10,12 +10,12 @@ const base = import.meta.env.BASE_URL;
       <h1>Apprends Python, une ligne à la fois.</h1>
       <p class="lede">
         Des séances de 5 à 10 minutes, depuis ton tout premier print() jusqu'au
-        jour où tu publies ton propre site. Pas de compte à créer, pas de jargon :
-        on commence par savoir où tu en es.
+        jour où tu publies ton propre site. Pas de jargon : on commence directement
+        par le niveau Débutant.
       </p>
       <div class="actions">
-        <a class="btn" id="btn-trouver-niveau" href={`${base}test/`}>Trouver mon niveau</a>
-        <a class="btn-ghost" href={`${base}lecons/`}>Voir les leçons</a>
+        <a class="btn" href={`${base}lecons/`}>Commencer les exercices</a>
+        <a class="btn-ghost" href={`${base}compte/`}>Mon compte</a>
       </div>
 
       <div class="carte accueil-progres" id="accueil-progres" style="display:none; margin-top: 1.5rem;">
@@ -49,14 +49,10 @@ const base = import.meta.env.BASE_URL;
     }
   }
 
-  const niveauTrouve = localStorage.getItem("nexora_niveau");
-  if (niveauTrouve) {
-    const boutonTest = document.getElementById("btn-trouver-niveau");
-    if (boutonTest) boutonTest.remove();
-  }
-  if (niveauTrouve) {
-    const totalGeneral = Object.values(TOTAUX).reduce((a, b) => a + b, 0);
-    const faitGeneral = ORDRE.reduce((acc, id) => acc + Math.min(progres(id).length, TOTAUX[id]), 0);
+  const totalGeneral = Object.values(TOTAUX).reduce((a, b) => a + b, 0);
+  const faitGeneral = ORDRE.reduce((acc, id) => acc + Math.min(progres(id).length, TOTAUX[id]), 0);
+
+  if (faitGeneral > 0) {
     const pourcentage = Math.round((faitGeneral / totalGeneral) * 100);
 
     const bloc = document.getElementById("accueil-progres")!;

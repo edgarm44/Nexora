@@ -5,8 +5,9 @@ const path = Astro.url.pathname;
 
 const onglets = [
   { href: base, label: "accueil.py", match: base },
-  { href: `${base}test/`, label: "test.py", match: `${base}test/` },
   { href: `${base}lecons/`, label: "lecons.py", match: `${base}lecons` },
+  { href: `${base}compte/`, label: "compte.py", match: `${base}compte` },
+  { href: `${base}idees/`, label: "idees.py", match: `${base}idees` },
 ];
 
 function estActif(match: string) {

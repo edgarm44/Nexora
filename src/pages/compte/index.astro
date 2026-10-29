@@ -1,0 +1,173 @@
+---
+import Base from "../../layouts/Base.astro";
+const base = import.meta.env.BASE_URL;
+
+const NIVEAUX = [
+  { id: "debutant", nom: "Débutant", glyphe: ">" },
+  { id: "intermediaire", nom: "Intermédiaire", glyphe: ">_" },
+  { id: "confirme", nom: "Confirmé", glyphe: "{ }" },
+  { id: "expert", nom: "Expert", glyphe: "#!" },
+  { id: "web", nom: "Maître", glyphe: "</>" },
+  { id: "algorithmes", nom: "Virtuose", glyphe: "ƒ(x)" },
+  { id: "donnees", nom: "Champion", glyphe: "{...}" },
+  { id: "projet", nom: "Légende", glyphe: "*" },
+];
+---
+<Base title="Nexora — Mon compte">
+  <span class="commentaire">profil</span>
+  <h1>Mon compte</h1>
+  <p class="lede">Tout reste ici, dans ce navigateur : pas d'e-mail, pas d'adresse, pas de numéro de téléphone. Rien n'est envoyé nulle part.</p>
+
+  <div class="carte" style="margin-top: 1.5rem;">
+    <span class="commentaire">pseudo</span>
+    <div class="actions" style="margin-top: 0.8rem; align-items: center;">
+      <input class="champ-reponse" id="champ-pseudo" type="text" maxlength="18" placeholder="Choisis un pseudo" style="max-width: 260px;" />
+      <button class="btn" id="btn-pseudo" type="button">Enregistrer</button>
+    </div>
+    <p class="retour" id="retour-pseudo" style="margin-top: 0.6rem;"></p>
+  </div>
+
+  <div class="carte" style="margin-top: 1.5rem;">
+    <span class="commentaire">titre</span>
+    <p id="titre-actuel" style="margin: 0.6rem 0 0; font-family: var(--font-head); font-weight: 700; font-size: 1.3rem;"></p>
+  </div>
+
+  <div class="carte" style="margin-top: 1.5rem;">
+    <span class="commentaire">personnage</span>
+    <p style="margin: 0.6rem 0 1.1rem; color: var(--ink-dim);">Un personnage se débloque avec son niveau. Clique sur celui que tu veux porter.</p>
+    <div class="grille-avatars" id="grille-avatars">
+      {NIVEAUX.map((n) => (
+        <button class="avatar-case" data-id={n.id} type="button">
+          <span class={`avatar avatar-${n.id}`}>{n.glyphe}</span>
+          <span class="avatar-nom">{n.nom}</span>
+          <span class="avatar-etat" data-etat></span>
+        </button>
+      ))}
+    </div>
+  </div>
+
+  <div class="carte" style="margin-top: 1.5rem;">
+    <span class="commentaire">succès</span>
+    <p style="margin: 0.6rem 0 1.1rem; color: var(--ink-dim);">Pas de points, pas d'XP : juste des badges à débloquer.</p>
+    <div class="grille-badges" id="grille-badges"></div>
+  </div>
+</Base>
+
+<script>
+  const ORDRE = ["debutant", "intermediaire", "confirme", "expert", "web", "algorithmes", "donnees", "projet"];
+  const TOTAUX_PAR_NIVEAU: Record<string, number> = { debutant: 8, intermediaire: 9, confirme: 9, expert: 10, web: 8, algorithmes: 9, donnees: 10, projet: 9 };
+  const NOMS: Record<string, string> = { debutant: "Débutant", intermediaire: "Intermédiaire", confirme: "Confirmé", expert: "Expert", web: "Maître", algorithmes: "Virtuose", donnees: "Champion", projet: "Légende" };
+
+  function progres(niveauId: string): string[] {
+    try {
+      return JSON.parse(localStorage.getItem(`nexora_progres_${niveauId}`) ?? "[]");
+    } catch {
+      return [];
+    }
+  }
+
+  function estComplet(niveauId: string): boolean {
+    const total = TOTAUX_PAR_NIVEAU[niveauId];
+    return total ? progres(niveauId).length >= total : false;
+  }
+
+  function debloque(niveauId: string): boolean {
+    const rang = ORDRE.indexOf(niveauId);
+    return rang === 0 || estComplet(ORDRE[rang - 1]);
+  }
+
+  // --- pseudo ---
+  const champPseudo = document.getElementById("champ-pseudo") as HTMLInputElement;
+  const retourPseudo = document.getElementById("retour-pseudo")!;
+  champPseudo.value = localStorage.getItem("nexora_pseudo") ?? "";
+
+  function enregistrerPseudo() {
+    const valeur = champPseudo.value.trim().slice(0, 18);
+    localStorage.setItem("nexora_pseudo", valeur);
+    retourPseudo.textContent = valeur ? `Pseudo enregistré : ${valeur}` : "Pseudo effacé.";
+    retourPseudo.className = "retour ok";
+  }
+  document.getElementById("btn-pseudo")!.addEventListener("click", enregistrerPseudo);
+  champPseudo.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") enregistrerPseudo();
+  });
+
+  // --- titre (= niveau le plus haut débloqué) ---
+  let titreId = "debutant";
+  for (const id of ORDRE) {
+    if (debloque(id)) titreId = id;
+  }
+  document.getElementById("titre-actuel")!.textContent = NOMS[titreId];
+
+  // --- personnage ---
+  let personnageActuel = localStorage.getItem("nexora_personnage") ?? "debutant";
+  if (!debloque(personnageActuel)) personnageActuel = "debutant";
+
+  document.querySelectorAll<HTMLButtonElement>(".avatar-case").forEach((carte) => {
+    const id = carte.dataset.id!;
+    const ouvert = debloque(id);
+    const etat = carte.querySelector("[data-etat]")!;
+
+    if (!ouvert) {
+      carte.classList.add("verrouille");
+      etat.textContent = "Verrouillé";
+    } else {
+      etat.textContent = estComplet(id) ? "Terminé" : "Débloqué";
+    }
+
+    if (id === personnageActuel) carte.classList.add("choisi");
+
+    carte.addEventListener("click", () => {
+      if (!debloque(id)) {
+        etat.textContent = "Termine le niveau précédent pour le débloquer";
+        return;
+      }
+      document.querySelectorAll(".avatar-case").forEach((c) => c.classList.remove("choisi"));
+      carte.classList.add("choisi");
+      localStorage.setItem("nexora_personnage", id);
+    });
+  });
+
+  // --- succès ---
+  const grilleBadges = document.getElementById("grille-badges")!;
+  const serieRecord = Number(localStorage.getItem("nexora_serie_record") ?? "0");
+
+  type Badge = { titre: string; desc: string; acquis: boolean };
+  const badges: Badge[] = [];
+
+  for (const id of ORDRE) {
+    badges.push({
+      titre: `Niveau ${NOMS[id]}`,
+      desc: `Terminer tous les exercices du niveau ${NOMS[id]}.`,
+      acquis: estComplet(id),
+    });
+  }
+
+  badges.push({
+    titre: "Tout Nexora",
+    desc: "Terminer les 8 niveaux, jusqu'à Légende.",
+    acquis: ORDRE.every(estComplet),
+  });
+
+  const SEUILS_SERIE = [3, 8, 15];
+  for (const seuil of SEUILS_SERIE) {
+    badges.push({
+      titre: `Série de ${seuil}`,
+      desc: `Répondre juste ${seuil} fois de suite, sans erreur.`,
+      acquis: serieRecord >= seuil,
+    });
+  }
+
+  grilleBadges.innerHTML = badges
+    .map(
+      (b) => `
+      <div class="badge ${b.acquis ? "acquis" : "verrouille"}">
+        <span class="badge-coche">${b.acquis ? "✓" : "–"}</span>
+        <div>
+          <p class="badge-titre">${b.titre}</p>
+          <p class="badge-desc">${b.desc}</p>
+        </div>
+      </div>`
+    )
+    .join("");
+</script>
