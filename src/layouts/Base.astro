@@ -7,6 +7,19 @@ const base = import.meta.env.BASE_URL;
 const path = Astro.url.pathname;
 const urlCanonique = new URL(path, Astro.site).toString();
 
+const donneesStructurees = {
+  "@context": "https://schema.org",
+  "@type": "LearningResource",
+  name: title,
+  description,
+  url: urlCanonique,
+  inLanguage: "fr",
+  isAccessibleForFree: true,
+  learningResourceType: "Exercices interactifs",
+  educationalLevel: "Débutant à avancé",
+  about: { "@type": "Thing", name: "Python (langage de programmation)" },
+};
+
 const onglets = [
   { href: base, label: "accueil.py", match: base },
   { href: `${base}lecons/`, label: "lecons.py", match: `${base}lecons` },
@@ -34,6 +47,7 @@ function estActif(match: string) {
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
+    <script type="application/ld+json" set:html={JSON.stringify(donneesStructurees)} />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://edgarm44.github.io/Nexora/sitemap-index.xml
