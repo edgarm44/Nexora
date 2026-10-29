@@ -33,7 +33,6 @@ export interface OptionsMoteur {
   titreFin: string;
   texteFin: string;
   retourHref: string;
-  hrefRevoir?: string; // par defaut, deduit de cleProgres sous /lecons/<niveau>/
 }
 
 declare global {
@@ -190,7 +189,7 @@ export function initExercices(opts: OptionsMoteur) {
   const body = document.getElementById(opts.corpsId)!;
   const progress = document.getElementById(opts.progressionId)!;
   const niveauId = opts.cleProgres.replace("nexora_progres_", "");
-  const hrefNiveau = opts.hrefRevoir ?? `${opts.base}lecons/${niveauId}/`;
+  const hrefNiveau = `${opts.base}lecons/${niveauId}/`;
   let current = 0;
 
   function progresActuel(): string[] {
