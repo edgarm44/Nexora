@@ -42,21 +42,7 @@ const niveaux = [
 </Base>
 
 <script>
-  const ORDRE = ["debutant", "intermediaire", "confirme", "expert", "web", "algorithmes", "donnees", "projet"];
-  const TOTAUX_PAR_NIVEAU: Record<string, number> = { debutant: 8, intermediaire: 9, confirme: 9, expert: 10, web: 8, algorithmes: 9, donnees: 10, projet: 9 };
-
-  function progres(niveauId: string): string[] {
-    try {
-      return JSON.parse(localStorage.getItem(`nexora_progres_${niveauId}`) ?? "[]");
-    } catch {
-      return [];
-    }
-  }
-
-  function estComplet(niveauId: string): boolean {
-    const total = TOTAUX_PAR_NIVEAU[niveauId];
-    return total ? progres(niveauId).length >= total : false;
-  }
+  import { ORDRE, TOTAUX_PAR_NIVEAU, progresNiveau as progres, niveauComplet as estComplet } from "../../lib/niveaux";
 
   document.querySelectorAll<HTMLAnchorElement>(".carte-niveau[data-niveau]").forEach((carte) => {
     const id = carte.getAttribute("data-niveau")!;

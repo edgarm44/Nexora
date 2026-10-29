@@ -626,6 +626,11 @@ main > p.lede {
   padding: 0;
 }
 .terminal-editable textarea:focus { outline: none; }
+.terminal-editable textarea:focus-visible {
+  outline: 2px solid var(--yellow);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
 
 .terminal-sortie {
   border-top: 1px solid var(--line);

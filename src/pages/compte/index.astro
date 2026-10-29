@@ -61,27 +61,7 @@ const NIVEAUX = [
 </Base>
 
 <script>
-  const ORDRE = ["debutant", "intermediaire", "confirme", "expert", "web", "algorithmes", "donnees", "projet"];
-  const TOTAUX_PAR_NIVEAU: Record<string, number> = { debutant: 8, intermediaire: 9, confirme: 9, expert: 10, web: 8, algorithmes: 9, donnees: 10, projet: 9 };
-  const NOMS: Record<string, string> = { debutant: "Débutant", intermediaire: "Intermédiaire", confirme: "Confirmé", expert: "Expert", web: "Maître", algorithmes: "Virtuose", donnees: "Champion", projet: "Légende" };
-
-  function progres(niveauId: string): string[] {
-    try {
-      return JSON.parse(localStorage.getItem(`nexora_progres_${niveauId}`) ?? "[]");
-    } catch {
-      return [];
-    }
-  }
-
-  function estComplet(niveauId: string): boolean {
-    const total = TOTAUX_PAR_NIVEAU[niveauId];
-    return total ? progres(niveauId).length >= total : false;
-  }
-
-  function debloque(niveauId: string): boolean {
-    const rang = ORDRE.indexOf(niveauId);
-    return rang === 0 || estComplet(ORDRE[rang - 1]);
-  }
+  import { ORDRE, NOMS_NIVEAUX as NOMS, niveauComplet as estComplet, niveauDebloque as debloque } from "../../lib/niveaux";
 
   // --- pseudo ---
   const champPseudo = document.getElementById("champ-pseudo") as HTMLInputElement;

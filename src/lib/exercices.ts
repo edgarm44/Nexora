@@ -295,7 +295,7 @@ export function initExercices(opts: OptionsMoteur) {
       });
     } else if (u.type === "completer" || u.type === "ecrire") {
       zone.innerHTML = `
-        <input class="champ-reponse" id="champ" type="text" placeholder="${u.placeholder ?? ""}" autocomplete="off" />
+        <input class="champ-reponse" id="champ" type="text" placeholder="${u.placeholder ?? ""}" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" />
         <div class="actions" style="margin-top: 0.9rem;"><button class="btn-ghost" id="btn-verifier" type="button">Vérifier</button></div>
         <p class="retour" id="retour"></p>
       `;
@@ -330,7 +330,7 @@ export function initExercices(opts: OptionsMoteur) {
             <span class="pyodide-statut" id="statut-pyodide">chargement de Python…</span>
           </div>
           <div class="terminal-corps">
-            <textarea id="zone-code" spellcheck="false">${u.codeDepart ?? ""}</textarea>
+            <textarea id="zone-code" spellcheck="false" autocapitalize="off" autocorrect="off" autocomplete="off">${u.codeDepart ?? ""}</textarea>
           </div>
           <div class="terminal-run-barre">
             <button class="btn-run" id="btn-run" type="button" disabled>▶ Exécuter</button>
@@ -407,7 +407,7 @@ export function initExercices(opts: OptionsMoteur) {
         <div class="terminal terminal-editable">
           <div class="terminal-barre"><span>html — modifiable</span></div>
           <div class="terminal-corps">
-            <textarea id="zone-html" spellcheck="false">${(u.codeDepart ?? "").replace(/</g, "&lt;")}</textarea>
+            <textarea id="zone-html" spellcheck="false" autocapitalize="off" autocorrect="off" autocomplete="off">${(u.codeDepart ?? "").replace(/</g, "&lt;")}</textarea>
           </div>
         </div>
         <p class="apercu-legende">Aperçu en direct</p>
