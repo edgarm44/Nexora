@@ -44,12 +44,29 @@ declare global {
 let pyodideInstance: any = null;
 let pyodideChargement: Promise<any> | null = null;
 
+// Le script pyodide.js pèse plusieurs Mo : on ne l'injecte qu'au moment où
+// l'utilisateur atteint vraiment un exercice de type "code", plutôt que de
+// le charger d'office dès l'ouverture de la page (la plupart des unités
+// sont des QCM ou des champs à compléter, qui n'en ont pas besoin).
+function chargerScriptPyodide(): Promise<void> {
+  if (window.loadPyodide) return Promise.resolve();
+  return new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    script.src = "https://cdn.jsdelivr.net/pyodide/v0.27.6/full/pyodide.js";
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error("echec du chargement de pyodide.js"));
+    document.head.appendChild(script);
+  });
+}
+
 function chargerPyodide() {
   if (!pyodideChargement) {
-    pyodideChargement = window.loadPyodide!().then((p: any) => {
-      pyodideInstance = p;
-      return p;
-    });
+    pyodideChargement = chargerScriptPyodide()
+      .then(() => window.loadPyodide!())
+      .then((p: any) => {
+        pyodideInstance = p;
+        return p;
+      });
   }
   return pyodideChargement;
 }
@@ -226,7 +243,7 @@ export function initExercices(opts: OptionsMoteur) {
       renderFin();
     } else {
       renderProgress();
-      renderUnite(opts.unites[current]);
+      renderUnite(opts.unites[current], true);
     }
   }
 
@@ -248,9 +265,9 @@ export function initExercices(opts: OptionsMoteur) {
     `;
   }
 
-  function renderUnite(u: Unite) {
+  function renderUnite(u: Unite, deplacerFocus = false) {
     body.innerHTML = `
-      <span class="commentaire">${current + 1} sur ${opts.unites.length} · ${u.titre}</span>
+      <span class="commentaire" id="titre-unite" tabindex="-1">${current + 1} sur ${opts.unites.length} · ${u.titre}</span>
       <p class="explication" style="margin-top: 0.4rem;">${u.explication}</p>
       ${blocCode(u.exemple)}
       <p class="consigne">${u.consigne}</p>
@@ -258,6 +275,16 @@ export function initExercices(opts: OptionsMoteur) {
       <div id="zone-exercice"></div>
       <div id="zone-suite"></div>
     `;
+
+    // Au clic sur "Exercice suivant", le contenu change entierement mais le
+    // focus clavier restait sur un bouton qui disparait du DOM : il retombait
+    // sur <body>, et un utilisateur au clavier ou avec un lecteur d'ecran
+    // perdait sa place et devait tout re-parcourir depuis le haut de page.
+    // On deplace le focus sur le titre du nouvel exercice, seulement lors
+    // d'une vraie navigation (pas au premier chargement de la page).
+    if (deplacerFocus) {
+      document.getElementById("titre-unite")?.focus();
+    }
 
     const zone = document.getElementById("zone-exercice")!;
     const suite = document.getElementById("zone-suite")!;

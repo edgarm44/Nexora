@@ -860,3 +860,12 @@ main > p.lede {
 @media (prefers-reduced-motion: reduce) {
   .confetti { animation: none; opacity: 0; }
 }
+
+/* ---------- focus clavier sur le titre d'exercice (changement d'unite) ---------- */
+
+#titre-unite:focus { outline: none; }
+#titre-unite:focus-visible {
+  outline: 2px solid var(--yellow);
+  outline-offset: 4px;
+  border-radius: 3px;
+}
