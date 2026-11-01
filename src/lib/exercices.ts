@@ -367,6 +367,7 @@ export function initExercices(opts: OptionsMoteur) {
           </div>
           <div class="terminal-run-barre">
             <button class="btn-run" id="btn-run" type="button" disabled>▶ Exécuter</button>
+            <button class="btn-reinit" id="btn-reinit" type="button" title="Remettre le code de départ">↺ Réinitialiser</button>
           </div>
           <div class="terminal-sortie vide" id="sortie"></div>
         </div>
@@ -374,6 +375,10 @@ export function initExercices(opts: OptionsMoteur) {
 
       const textarea = document.getElementById("zone-code") as HTMLTextAreaElement;
       const btnRun = document.getElementById("btn-run") as HTMLButtonElement;
+      document.getElementById("btn-reinit")!.addEventListener("click", () => {
+        textarea.value = u.codeDepart ?? "";
+        textarea.focus();
+      });
       const sortie = document.getElementById("sortie")!;
       const statut = document.getElementById("statut-pyodide")!;
 
@@ -456,7 +461,10 @@ export function initExercices(opts: OptionsMoteur) {
         </div>
         <p class="apercu-legende">Aperçu en direct</p>
         <iframe id="apercu" class="apercu-iframe" title="Aperçu de ta page" sandbox=""></iframe>
-        <div class="actions" style="margin-top: 0.9rem;"><button class="btn-ghost" id="btn-verifier-html" type="button">Vérifier</button></div>
+        <div class="actions" style="margin-top: 0.9rem;">
+          <button class="btn-ghost" id="btn-verifier-html" type="button">Vérifier</button>
+          <button class="btn-reinit" id="btn-reinit-html" type="button" title="Remettre le code de départ">↺ Réinitialiser</button>
+        </div>
         <p class="retour" id="retour-html"></p>
       `;
 
@@ -469,6 +477,11 @@ export function initExercices(opts: OptionsMoteur) {
       }
       rafraichirApercu();
       textarea.addEventListener("input", rafraichirApercu);
+      document.getElementById("btn-reinit-html")!.addEventListener("click", () => {
+        textarea.value = u.codeDepart ?? "";
+        rafraichirApercu();
+        textarea.focus();
+      });
 
       document.getElementById("btn-verifier-html")!.addEventListener("click", () => {
         const ok = u.regexHtml ? u.regexHtml.test(textarea.value) : true;

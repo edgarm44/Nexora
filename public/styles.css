@@ -869,3 +869,108 @@ main > p.lede {
   outline-offset: 4px;
   border-radius: 3px;
 }
+
+/* ---------- bouton reinitialiser (exercices code / html) ---------- */
+
+.btn-reinit {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.82rem;
+  color: var(--ink-dim);
+  background: transparent;
+  border: 1.5px solid var(--line-strong);
+  padding: 0.45rem 0.85rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+.btn-reinit:hover { border-color: var(--bad); color: var(--ink); }
+
+/* ---------- page compte : identite visuelle distincte des lecons ---------- */
+
+.profil-hero {
+  margin-top: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.3rem;
+  padding: 1.6rem 1.8rem;
+  border-radius: var(--radius);
+  background: linear-gradient(135deg, rgba(91, 155, 213, 0.12), rgba(242, 201, 76, 0.08) 55%, var(--bg-raised) 100%);
+  border: 1px solid var(--line-strong);
+  position: relative;
+  overflow: hidden;
+}
+.profil-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 85% 20%, rgba(192, 132, 252, 0.16), transparent 55%);
+  pointer-events: none;
+}
+@media (max-width: 560px) {
+  .profil-hero { flex-direction: column; align-items: flex-start; text-align: left; }
+}
+
+.avatar.avatar-grand {
+  width: 84px;
+  height: 84px;
+  border-radius: 22px;
+  font-size: 1.5rem;
+  border-width: 2.5px;
+  flex: none;
+  position: relative;
+  z-index: 1;
+}
+
+.profil-hero-corps { position: relative; z-index: 1; flex: 1; min-width: 0; }
+.profil-titre {
+  margin: 0 0 0.6rem;
+  font-family: var(--font-head);
+  font-weight: 800;
+  font-size: 1.4rem;
+  color: var(--ink);
+}
+.profil-pseudo-ligne { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem; }
+.profil-pseudo-ligne .champ-reponse { max-width: 240px; background: var(--bg-sunken); }
+
+.profil-stats {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.8rem;
+}
+@media (max-width: 560px) { .profil-stats { grid-template-columns: 1fr; } }
+
+.profil-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 1rem 0.6rem;
+  border-radius: var(--radius-sm);
+  background: var(--bg-sunken);
+  border: 1px dashed var(--line-strong);
+  text-align: center;
+}
+.profil-stat-chiffre {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: var(--yellow);
+}
+.profil-stat-label {
+  font-size: 0.76rem;
+  color: var(--ink-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.panneau {
+  margin-top: 1.5rem;
+  padding: 1.5rem 1.7rem;
+  border-radius: var(--radius);
+  background: var(--bg-sunken);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--blue);
+}
+.panneau-desc { margin: 0.6rem 0 1.1rem; color: var(--ink-dim); }

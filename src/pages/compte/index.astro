@@ -18,35 +18,43 @@ const NIVEAUX = [
   <h1>Mon compte</h1>
   <p class="lede">Tout reste ici, dans ce navigateur : pas d'e-mail, pas d'adresse, pas de numéro de téléphone. Rien n'est envoyé nulle part.</p>
 
-  <div class="carte" style="margin-top: 1.5rem;">
-    <span class="commentaire">pseudo</span>
-    <label class="sr-only" for="champ-pseudo">Ton pseudo</label>
-    <div class="actions" style="margin-top: 0.8rem; align-items: center;">
-      <input class="champ-reponse" id="champ-pseudo" type="text" maxlength="18" placeholder="Choisis un pseudo" style="max-width: 260px;" />
-      <button class="btn" id="btn-pseudo" type="button">Enregistrer</button>
+  <div class="profil-hero">
+    <span class="avatar avatar-grand" id="hero-avatar"></span>
+    <div class="profil-hero-corps">
+      <p class="profil-titre" id="titre-actuel"></p>
+      <label class="sr-only" for="champ-pseudo">Ton pseudo</label>
+      <div class="profil-pseudo-ligne">
+        <input class="champ-reponse" id="champ-pseudo" type="text" maxlength="18" placeholder="Choisis un pseudo" />
+        <button class="btn" id="btn-pseudo" type="button">Enregistrer</button>
+      </div>
+      <p class="retour" id="retour-pseudo"></p>
     </div>
-    <p class="retour" id="retour-pseudo" style="margin-top: 0.6rem;"></p>
   </div>
 
-  <div class="carte" style="margin-top: 1.5rem;">
-    <span class="commentaire">titre</span>
-    <p id="titre-actuel" style="margin: 0.6rem 0 0; font-family: var(--font-head); font-weight: 700; font-size: 1.3rem;"></p>
+  <div class="profil-stats">
+    <div class="profil-stat">
+      <span class="profil-stat-chiffre" id="stat-serie">0</span>
+      <span class="profil-stat-label">série en cours</span>
+    </div>
+    <div class="profil-stat">
+      <span class="profil-stat-chiffre" id="stat-niveaux">0/8</span>
+      <span class="profil-stat-label">niveaux terminés</span>
+    </div>
+    <div class="profil-stat">
+      <span class="profil-stat-chiffre" id="stat-badges">0</span>
+      <span class="profil-stat-label">badges débloqués</span>
+    </div>
   </div>
 
-  <div class="carte" style="margin-top: 1.5rem;" id="carte-serie">
-    <span class="commentaire">série en cours</span>
-    <p id="serie-actuelle" style="margin: 0.6rem 0 0; font-family: var(--font-head); font-weight: 700; font-size: 1.3rem;"></p>
-  </div>
-
-  <div class="carte" style="margin-top: 1.5rem;" id="carte-a-revoir">
+  <div class="panneau" id="carte-a-revoir">
     <span class="commentaire">à revoir</span>
-    <p style="margin: 0.6rem 0 1rem; color: var(--ink-dim);">Les exercices où tu t'es trompé au moins une fois, pas encore réussis depuis. Ça disparaît automatiquement dès que tu les réussis.</p>
+    <p class="panneau-desc">Les exercices où tu t'es trompé au moins une fois, pas encore réussis depuis. Ça disparaît automatiquement dès que tu les réussis.</p>
     <div id="liste-a-revoir"></div>
   </div>
 
-  <div class="carte" style="margin-top: 1.5rem;">
+  <div class="panneau">
     <span class="commentaire">personnage</span>
-    <p style="margin: 0.6rem 0 1.1rem; color: var(--ink-dim);">Un personnage se débloque avec son niveau. Clique sur celui que tu veux porter.</p>
+    <p class="panneau-desc">Un personnage se débloque avec son niveau. Clique sur celui que tu veux porter.</p>
     <div class="grille-avatars" id="grille-avatars">
       {NIVEAUX.map((n) => (
         <button class="avatar-case" data-id={n.id} type="button">
@@ -58,15 +66,26 @@ const NIVEAUX = [
     </div>
   </div>
 
-  <div class="carte" style="margin-top: 1.5rem;">
+  <div class="panneau">
     <span class="commentaire">succès</span>
-    <p style="margin: 0.6rem 0 1.1rem; color: var(--ink-dim);">Pas de points, pas d'XP : juste des badges à débloquer.</p>
+    <p class="panneau-desc">Pas de points, pas d'XP : juste des badges à débloquer.</p>
     <div class="grille-badges" id="grille-badges"></div>
   </div>
 </Base>
 
 <script>
   import { ORDRE, NOMS_NIVEAUX as NOMS, niveauComplet as estComplet, niveauDebloque as debloque } from "../../lib/niveaux";
+
+  const GLYPHES: Record<string, string> = {
+    debutant: ">",
+    intermediaire: ">_",
+    confirme: "{ }",
+    expert: "#!",
+    web: "</>",
+    algorithmes: "ƒ(x)",
+    donnees: "{...}",
+    projet: "*",
+  };
 
   // --- pseudo ---
   const champPseudo = document.getElementById("champ-pseudo") as HTMLInputElement;
@@ -91,12 +110,21 @@ const NIVEAUX = [
   }
   document.getElementById("titre-actuel")!.textContent = NOMS[titreId];
 
+  // --- personnage (determine avant l'avatar du hero) ---
+  let personnageActuel = localStorage.getItem("nexora_personnage") ?? "debutant";
+  if (!debloque(personnageActuel)) personnageActuel = "debutant";
+
+  const heroAvatar = document.getElementById("hero-avatar")!;
+  heroAvatar.textContent = GLYPHES[personnageActuel] ?? ">";
+  heroAvatar.className = `avatar avatar-grand avatar-${personnageActuel}`;
+
+  // --- statistiques ---
   const serieActuelle = Number(localStorage.getItem("nexora_serie_actuelle") ?? "0");
-  const zoneSerie = document.getElementById("serie-actuelle")!;
-  zoneSerie.textContent =
-    serieActuelle >= 2
-      ? `🔥 ${serieActuelle} bonnes réponses d'affilée`
-      : "Réponds juste à deux exercices de suite pour démarrer une série.";
+  document.getElementById("stat-serie")!.textContent =
+    serieActuelle >= 1 ? `🔥 ${serieActuelle}` : "–";
+
+  const niveauxTermines = ORDRE.filter(estComplet).length;
+  document.getElementById("stat-niveaux")!.textContent = `${niveauxTermines}/${ORDRE.length}`;
 
   // --- à revoir ---
   type EntreeARevoir = { titre: string; href: string; echecs: number };
@@ -123,10 +151,7 @@ const NIVEAUX = [
       .join("");
   }
 
-  // --- personnage ---
-  let personnageActuel = localStorage.getItem("nexora_personnage") ?? "debutant";
-  if (!debloque(personnageActuel)) personnageActuel = "debutant";
-
+  // --- choix du personnage ---
   document.querySelectorAll<HTMLButtonElement>(".avatar-case").forEach((carte) => {
     const id = carte.dataset.id!;
     const ouvert = debloque(id);
@@ -149,6 +174,8 @@ const NIVEAUX = [
       document.querySelectorAll(".avatar-case").forEach((c) => c.classList.remove("choisi"));
       carte.classList.add("choisi");
       localStorage.setItem("nexora_personnage", id);
+      heroAvatar.textContent = GLYPHES[id] ?? ">";
+      heroAvatar.className = `avatar avatar-grand avatar-${id}`;
     });
   });
 
@@ -181,6 +208,8 @@ const NIVEAUX = [
       acquis: serieRecord >= seuil,
     });
   }
+
+  document.getElementById("stat-badges")!.textContent = String(badges.filter((b) => b.acquis).length);
 
   grilleBadges.innerHTML = badges
     .map(
